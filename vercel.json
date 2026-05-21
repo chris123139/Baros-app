@@ -1,7 +1,13 @@
+Bien ! Maintenant ouvrez `vercel.json` dans votre repo et modifiez-le avec ce contenu :
+
+```json
 {
   "rewrites": [
-    { "source": "/pointage", "destination": "/baros-pointage-fixed.html" },
-    { "source": "/manager", "destination": "/baros-manager-v9.html" },
-    { "source": "/", "destination": "/baros-pointage-fixed.html" }
+    { "source": "/pointage", "destination": "/baros-pointage1 .html" },
+    { "source": "/manager", "destination": "/baros-manager .html" },
+    { "source": "/", "destination": "/baros-pointage1 .html" }
   ]
 }
+```
+
+Pour l'ouvrir : appuyez sur `vercel.json` → puis sur le **crayon ✏️** ou **`···`** → **Modifier**.
