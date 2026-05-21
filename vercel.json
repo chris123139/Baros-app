@@ -1,7 +1,7 @@
 {
   "rewrites": [
-    { "source": "/pointage", "destination": "/baros-pointage1 .html" },
+    { "source": "/pointage", "destination": "/baros-pointage v2 .html" },
     { "source": "/manager", "destination": "/baros-manager .html" },
-    { "source": "/", "destination": "/baros-pointage-v2 .html" }
+    { "source": "/", "destination": "/baros-pointage v2 .html" }
   ]
 }
