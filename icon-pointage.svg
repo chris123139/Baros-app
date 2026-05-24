@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="100" fill="#0a0a0f"/>
+  <rect x="40" y="40" width="432" height="432" rx="80" fill="#12121a"/>
+  <!-- QR scan frame corners -->
+  <path d="M130 130 L130 170 M130 130 L170 130" stroke="#c8f55a" stroke-width="18" stroke-linecap="round" fill="none"/>
+  <path d="M382 130 L382 170 M382 130 L342 130" stroke="#c8f55a" stroke-width="18" stroke-linecap="round" fill="none"/>
+  <path d="M130 382 L130 342 M130 382 L170 382" stroke="#c8f55a" stroke-width="18" stroke-linecap="round" fill="none"/>
+  <path d="M382 382 L382 342 M382 382 L342 382" stroke="#c8f55a" stroke-width="18" stroke-linecap="round" fill="none"/>
+  <!-- Scan line -->
+  <rect x="110" y="249" width="292" height="14" rx="7" fill="#c8f55a" opacity="0.7"/>
+  <!-- Small QR dots -->
+  <rect x="160" y="175" width="40" height="40" rx="6" fill="#c8f55a" opacity="0.5"/>
+  <rect x="216" y="175" width="40" height="40" rx="6" fill="#c8f55a" opacity="0.3"/>
+  <rect x="272" y="175" width="40" height="40" rx="6" fill="#c8f55a" opacity="0.5"/>
+  <rect x="312" y="175" width="40" height="40" rx="6" fill="#c8f55a" opacity="0.3"/>
+  <!-- BarOS text -->
+  <text x="256" y="440" text-anchor="middle" font-family="Arial,sans-serif" font-size="42" font-weight="900" fill="#c8f55a" opacity="0.6">SCAN</text>
+</svg>

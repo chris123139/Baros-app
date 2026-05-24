@@ -1,0 +1,27 @@
+{
+  "name": "BarOS Pointage",
+  "short_name": "Pointage",
+  "description": "BarOS — Scanner de badges et pointage employés",
+  "start_url": "./pointage.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0a0f",
+  "theme_color": "#0a0a0f",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "icons/icon-pointage.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-pointage.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["business", "productivity"]
+}

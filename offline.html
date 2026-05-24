@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0a0f">
+<title>BarOS — Hors ligne</title>
+<style>
+  :root { --bg:#0a0a0f; --s1:#12121a; --bd:rgba(255,255,255,0.07); --tx:#f0eff5; --mt:rgba(240,239,245,0.45); --ac:#c8f55a; --wn:#ffb444; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html, body { width:100%; height:100%; background:var(--bg); color:var(--tx); font-family:-apple-system,BlinkMacSystemFont,'DM Sans',sans-serif; }
+  body { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:24px; text-align:center; min-height:100vh; }
+  .logo { font-size:36px; font-weight:900; color:var(--ac); letter-spacing:-1px; margin-bottom:4px; }
+  .icon { font-size:52px; margin-bottom:8px; }
+  h1 { font-size:20px; font-weight:700; color:var(--tx); }
+  p { font-size:13px; color:var(--mt); line-height:1.7; max-width:300px; }
+  .card { background:var(--s1); border:1px solid var(--bd); border-radius:16px; padding:28px 24px; max-width:360px; width:100%; }
+  .badge { display:inline-flex; align-items:center; gap:6px; background:rgba(255,180,68,.1); border:1px solid rgba(255,180,68,.25); border-radius:8px; padding:5px 12px; font-size:11px; color:var(--wn); margin-bottom:16px; }
+  .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:10px 20px; background:var(--ac); color:#0a0a0f; border:none; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer; margin-top:16px; width:100%; }
+  .hint { font-size:11px; color:var(--mt); margin-top:12px; line-height:1.6; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">BarOS</div>
+    <div class="icon">📡</div>
+    <div class="badge">⚠️ Mode hors ligne</div>
+    <h1>Connexion requise</h1>
+    <p>BarOS nécessite une connexion internet pour synchroniser les données en temps réel avec Supabase.</p>
+    <button class="btn" onclick="window.location.reload()">🔄 Réessayer</button>
+    <div class="hint">
+      Vérifiez votre connexion Wi-Fi ou données mobiles,<br>puis rechargez la page.
+    </div>
+  </div>
+</body>
+</html>

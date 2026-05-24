@@ -1,0 +1,43 @@
+{
+  "name": "BarOS Manager",
+  "short_name": "BarOS Mgr",
+  "description": "BarOS — Gestion de bar intelligente",
+  "start_url": "./gestionnaire.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a0a0f",
+  "theme_color": "#c8f55a",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "icons/icon-manager.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-manager.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Pointage",
+      "short_name": "Pointage",
+      "description": "Scanner de badges employés",
+      "url": "./pointage.html",
+      "icons": [{ "src": "icons/icon-pointage.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Personnel",
+      "short_name": "Personnel",
+      "description": "Application staff",
+      "url": "./personnel.html",
+      "icons": [{ "src": "icons/icon-personnel.svg", "sizes": "any" }]
+    }
+  ],
+  "categories": ["business", "productivity"]
+}
