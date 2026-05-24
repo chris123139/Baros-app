@@ -1,7 +1,0 @@
-{
-  "rewrites": [
-    { "source": "/pointage", "destination": "/pointage.html" },
-    { "source": "/manager", "destination": "/manager.html" },
-    { "source": "/", "destination": "/pointage.html" }
-  ]
-}
