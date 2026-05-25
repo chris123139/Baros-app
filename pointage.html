@@ -132,90 +132,163 @@ body {
 .wait-box .w-title { font-family:Syne,sans-serif; font-size:15px; font-weight:700; color:var(--tx); }
 .wait-box .w-sub   { font-size:11px; color:var(--mt); margin-top:3px; line-height:1.5; }
 
-/* ── CARTE RÉSULTAT ── */
+/* ── CARTE RÉSULTAT PREMIUM (plein écran) ── */
 .result-card {
   position:fixed; inset:0; z-index:100;
-  display:flex; align-items:center; justify-content:center;
-  background:rgba(10,10,15,.92); backdrop-filter:blur(6px);
-  padding:20px;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  background:var(--bg);
   opacity:0; pointer-events:none;
-  transition:opacity .25s;
+  transition:opacity .3s ease;
+  overflow:hidden;
 }
 .result-card.show { opacity:1; pointer-events:all; }
 
-.rc-inner {
-  background:var(--s1); border-radius:20px;
-  border:1px solid var(--bd2);
-  padding:24px 22px 20px;
-  width:100%; max-width:360px;
-  text-align:center;
-  transform:translateY(20px); transition:transform .25s;
+/* Fond coloré animé selon statut */
+.result-card::before {
+  content:''; position:absolute; inset:0;
+  opacity:0; transition:opacity .5s ease;
+  pointer-events:none;
 }
-.result-card.show .rc-inner { transform:translateY(0); }
+.result-card.arrive-bg::before  { background:radial-gradient(ellipse at 50% 0%, rgba(74,222,128,.18) 0%, transparent 70%); opacity:1; }
+.result-card.sortie-bg::before  { background:radial-gradient(ellipse at 50% 0%, rgba(255,180,68,.15) 0%, transparent 70%); opacity:1; }
+.result-card.retard-bg::before  { background:radial-gradient(ellipse at 50% 0%, rgba(255,94,94,.18) 0%, transparent 70%); opacity:1; }
+.result-card.avance-bg::before  { background:radial-gradient(ellipse at 50% 0%, rgba(90,180,255,.18) 0%, transparent 70%); opacity:1; }
 
-/* statut badge en haut */
+.rc-inner {
+  position:relative; z-index:1;
+  width:100%; max-width:400px;
+  padding:32px 24px 24px;
+  text-align:center;
+  transform:translateY(32px) scale(.97); transition:transform .35s cubic-bezier(.22,1,.36,1);
+  display:flex; flex-direction:column; align-items:center;
+}
+.result-card.show .rc-inner { transform:translateY(0) scale(1); }
+
+/* Statut badge */
 .rc-status {
   display:inline-flex; align-items:center; gap:6px;
-  padding:5px 14px; border-radius:999px;
-  font-size:12px; font-weight:700; letter-spacing:.04em;
-  margin-bottom:16px;
+  padding:6px 18px; border-radius:999px;
+  font-size:12px; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
+  margin-bottom:24px;
 }
-.rc-status.arrive  { background:rgba(74,222,128,.12); color:var(--gn); border:1px solid rgba(74,222,128,.25); }
-.rc-status.sortie  { background:rgba(255,180,68,.10); color:var(--wn); border:1px solid rgba(255,180,68,.25); }
-.rc-status.retard  { background:rgba(255,94,94,.10);  color:var(--dg); border:1px solid rgba(255,94,94,.25); }
-.rc-status.avance  { background:rgba(90,180,255,.10); color:var(--inf); border:1px solid rgba(90,180,255,.25); }
-.rc-status.offline { background:rgba(255,180,68,.10); color:var(--wn); border:1px solid rgba(255,180,68,.25); }
+.rc-status.arrive  { background:rgba(74,222,128,.15); color:var(--gn); border:1px solid rgba(74,222,128,.3); }
+.rc-status.sortie  { background:rgba(255,180,68,.12); color:var(--wn); border:1px solid rgba(255,180,68,.3); }
+.rc-status.retard  { background:rgba(255,94,94,.12);  color:var(--dg); border:1px solid rgba(255,94,94,.3); }
+.rc-status.avance  { background:rgba(90,180,255,.12); color:var(--inf); border:1px solid rgba(90,180,255,.3); }
+.rc-status.offline { background:rgba(255,180,68,.12); color:var(--wn); border:1px solid rgba(255,180,68,.3); }
 
-/* Photo employé */
+/* Photo employé — grande */
 .rc-photo {
-  width:80px; height:80px; border-radius:50%;
-  object-fit:cover; margin:0 auto 12px;
+  width:110px; height:110px; border-radius:50%;
+  margin:0 auto 18px;
   border:3px solid var(--bd2);
   background:var(--s3);
   display:flex; align-items:center; justify-content:center;
-  font-size:32px; overflow:hidden;
+  font-size:48px; overflow:hidden;
+  box-shadow:0 0 0 6px rgba(255,255,255,.04), 0 16px 40px rgba(0,0,0,.5);
+  flex-shrink:0;
 }
 .rc-photo img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
 
-.rc-nom    { font-family:Syne,sans-serif; font-size:22px; font-weight:800; color:var(--tx); }
-.rc-poste  { font-size:12px; color:var(--mt); margin-top:3px; margin-bottom:16px; }
-
-.rc-time-box {
-  background:var(--s2); border-radius:var(--rs);
-  padding:12px 16px; margin-bottom:12px;
+/* Message de bienvenue dynamique */
+.rc-welcome {
+  font-size:13px; color:var(--mt); font-weight:500;
+  margin-bottom:4px; letter-spacing:.02em;
 }
-.rc-time-lbl { font-size:10px; color:var(--mt); text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px; }
-.rc-time-val { font-family:Syne,sans-serif; font-size:30px; font-weight:800; color:var(--ac); }
+.rc-nom    { font-family:Syne,sans-serif; font-size:26px; font-weight:800; color:var(--tx); line-height:1.1; }
+.rc-poste  { font-size:12px; color:var(--mt); margin-top:5px; margin-bottom:24px; }
+
+/* Heure principale */
+.rc-time-box {
+  background:var(--s2); border-radius:16px;
+  padding:16px 24px; margin-bottom:14px;
+  width:100%; border:1px solid var(--bd);
+}
+.rc-time-lbl { font-size:10px; color:var(--mt); text-transform:uppercase; letter-spacing:.1em; margin-bottom:6px; }
+.rc-time-val { font-family:Syne,sans-serif; font-size:42px; font-weight:800; color:var(--ac); line-height:1; }
 
 /* Planning du jour */
 .rc-planning {
-  display:flex; gap:6px; justify-content:center; flex-wrap:wrap;
-  margin-bottom:14px;
+  display:flex; gap:8px; justify-content:center; flex-wrap:wrap;
+  margin-bottom:12px; width:100%;
 }
 .rc-plng-item {
-  background:var(--s2); border-radius:var(--rs);
-  padding:6px 12px; font-size:11px;
+  background:var(--s2); border-radius:var(--rs); border:1px solid var(--bd);
+  padding:8px 14px; font-size:11px; flex:1; min-width:90px;
 }
-.rc-plng-lbl { color:var(--mt); margin-bottom:1px; }
-.rc-plng-val { font-weight:600; color:var(--tx); }
+.rc-plng-lbl { color:var(--mt); margin-bottom:2px; }
+.rc-plng-val { font-weight:700; color:var(--tx); font-size:13px; }
 
 /* Alerte retard/avance */
 .rc-alert {
-  border-radius:var(--rs); padding:8px 14px;
-  font-size:12px; font-weight:600; margin-bottom:12px;
+  border-radius:var(--rs); padding:10px 16px;
+  font-size:13px; font-weight:600; margin-bottom:16px;
+  width:100%;
 }
-.rc-alert.retard { background:rgba(255,94,94,.1);  color:var(--dg); border:1px solid rgba(255,94,94,.2); }
-.rc-alert.avance { background:rgba(90,180,255,.1); color:var(--inf); border:1px solid rgba(90,180,255,.2); }
+.rc-alert.retard { background:rgba(255,94,94,.1);  color:var(--dg); border:1px solid rgba(255,94,94,.25); }
+.rc-alert.avance { background:rgba(90,180,255,.1); color:var(--inf); border:1px solid rgba(90,180,255,.25); }
 .rc-alert.ok     { background:rgba(74,222,128,.08);color:var(--gn); border:1px solid rgba(74,222,128,.2); }
+
+/* Bouton Nouveau scan */
+.rc-btn-new {
+  width:100%; padding:14px;
+  background:var(--ac); color:#0a0a0f;
+  border:none; border-radius:14px;
+  font-family:'DM Sans',sans-serif; font-size:15px; font-weight:700;
+  cursor:pointer; margin-top:8px;
+  letter-spacing:.01em;
+  transition:transform .1s, opacity .1s;
+  -webkit-tap-highlight-color:transparent;
+}
+.rc-btn-new:active { transform:scale(.97); opacity:.9; }
 
 /* Barre de fermeture auto */
 .rc-close-bar {
   height:3px; background:var(--s3); border-radius:2px;
-  overflow:hidden; margin-top:6px;
+  overflow:hidden; margin-top:18px; width:100%;
 }
 .rc-close-fill {
   height:100%; background:var(--ac); border-radius:2px;
   width:100%; transition:width linear;
+}
+.rc-close-hint {
+  font-size:10px; color:var(--ht); margin-top:6px; text-align:center;
+}
+
+/* ── ÉCRAN SUSPENDU (rouge) ── */
+.suspended-card {
+  position:fixed; inset:0; z-index:110;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  background:#0d0404;
+  opacity:0; pointer-events:none;
+  transition:opacity .3s;
+  padding:32px;
+  text-align:center;
+}
+.suspended-card.show { opacity:1; pointer-events:all; }
+.suspended-card::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse at 50% 30%, rgba(255,60,60,.22) 0%, transparent 65%);
+  pointer-events:none;
+}
+.susp-icon  { font-size:64px; margin-bottom:24px; position:relative; z-index:1; }
+.susp-title {
+  font-family:Syne,sans-serif; font-size:22px; font-weight:800;
+  color:#ff5e5e; margin-bottom:12px; position:relative; z-index:1;
+}
+.susp-msg {
+  font-size:14px; color:rgba(240,239,245,.5); line-height:1.7;
+  margin-bottom:32px; position:relative; z-index:1; max-width:300px;
+}
+.susp-close {
+  background:rgba(255,94,94,.15); color:#ff5e5e;
+  border:1px solid rgba(255,94,94,.3);
+  border-radius:14px; padding:13px 32px;
+  font-family:'DM Sans',sans-serif; font-size:14px; font-weight:700;
+  cursor:pointer; position:relative; z-index:1;
+  -webkit-tap-highlight-color:transparent;
 }
 
 /* ── COMPTEUR JOURNALIER ── */
@@ -338,13 +411,14 @@ body {
 
 </div>
 
-<!-- ── CARTE RÉSULTAT (overlay) ── -->
+<!-- ── CARTE RÉSULTAT PREMIUM (plein écran) ── -->
 <div class="result-card" id="result-card">
   <div class="rc-inner">
     <div class="rc-status" id="rc-status">—</div>
-    <div class="rc-photo" id="rc-photo">👤</div>
-    <div class="rc-nom"   id="rc-nom">—</div>
-    <div class="rc-poste" id="rc-poste">—</div>
+    <div class="rc-photo"   id="rc-photo">👤</div>
+    <div class="rc-welcome" id="rc-welcome"></div>
+    <div class="rc-nom"     id="rc-nom">—</div>
+    <div class="rc-poste"   id="rc-poste">—</div>
 
     <div class="rc-time-box">
       <div class="rc-time-lbl" id="rc-time-lbl">Heure d'arrivée</div>
@@ -354,8 +428,19 @@ body {
     <div class="rc-planning" id="rc-planning"></div>
     <div class="rc-alert"    id="rc-alert" style="display:none"></div>
 
+    <button class="rc-btn-new" id="rc-btn-new" onclick="closeResult()">📷 Nouveau scan</button>
+
     <div class="rc-close-bar"><div class="rc-close-fill" id="rc-close-fill"></div></div>
+    <div class="rc-close-hint" id="rc-close-hint">Fermeture automatique dans <span id="rc-countdown">60</span>s</div>
   </div>
+</div>
+
+<!-- ── ÉCRAN SUSPENDU ── -->
+<div class="suspended-card" id="suspended-card">
+  <div class="susp-icon">🚫</div>
+  <div class="susp-title">Accès refusé</div>
+  <div class="susp-msg" id="susp-msg">Vous avez été suspendu de la boîte.<br>Contactez votre manager.</div>
+  <button class="susp-close" onclick="closeSuspended()">Fermer</button>
 </div>
 
 <!-- ── CARTE ERREUR ── -->
@@ -421,703 +506,4 @@ body {
 //  CONSTANTES & ÉTAT
 // ══════════════════════════════════════════════════
 const SB_URL_DEFAULT = 'https://qyxdfmulrghlanetfcxy.supabase.co';
-const SB_KEY_DEFAULT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5eGRmbXVscmdobGFuZXRmY3h5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3ODE3MTgsImV4cCI6MjA5NDM1NzcxOH0.lXMWHGOsjVghP_zdkaocZlr2A23FZHQiw84szngLvTo';
-
-let db = null;
-let ETAB_ID = null;
-let ETAB_NOM = '';
-let scanCooldown = false;   // évite double-scan
-let resultTimer  = null;
-
-// ══════════════════════════════════════════════════
-// ══════════════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════════════
-(function init() {
-  updateClock();
-  setInterval(updateClock, 10000);
-
-  // Réseau
-  window.addEventListener('online',  () => { document.getElementById('offline-bar').style.display='none'; syncOffline(); });
-  window.addEventListener('offline', () => { document.getElementById('offline-bar').style.display='block'; });
-  if (!navigator.onLine) document.getElementById('offline-bar').style.display = 'block';
-
-  // ── Demande de permission caméra UNE SEULE FOIS ──
-  function _showCameraError(msg) {
-    // Affiche un bandeau rouge visible avec le message d'erreur réel
-    let bar = document.getElementById('camera-error-bar');
-    if (!bar) {
-      bar = document.createElement('div');
-      bar.id = 'camera-error-bar';
-      bar.style.cssText = [
-        'position:fixed','top:0','left:0','right:0','z-index:9999',
-        'background:#c0392b','color:#fff','font-size:13px','padding:10px 16px',
-        'text-align:center','line-height:1.4','cursor:pointer'
-      ].join(';');
-      bar.onclick = () => bar.remove();
-      document.body.appendChild(bar);
-    }
-    bar.innerHTML = '📷 Caméra bloquée — ' + msg +
-      '<br><small>Cliquez ici pour fermer. Si l\'hébergement est Supabase Storage, migrez vers Vercel/Netlify (Permissions-Policy serveur).</small>';
-  }
-
-  function _startAfterCamera() {
-    const cfg = JSON.parse(localStorage.getItem('baros_pointage_cfg') || 'null');
-    if (cfg && cfg.url && cfg.key && cfg.etab_id) {
-      document.getElementById('setup-card').style.display = 'none';
-      startApp(cfg);
-    } else {
-      document.getElementById('cfg-url').value = SB_URL_DEFAULT;
-      document.getElementById('cfg-key').value = SB_KEY_DEFAULT;
-      document.getElementById('setup-card').style.display = 'flex';
-      startSetupScanner();
-    }
-  }
-
-  function _startWithoutCamera(reason) {
-    _showCameraError(reason);
-    const cfg = JSON.parse(localStorage.getItem('baros_pointage_cfg') || 'null');
-    if (cfg && cfg.url && cfg.key && cfg.etab_id) {
-      document.getElementById('setup-card').style.display = 'none';
-      startApp(cfg);
-    } else {
-      document.getElementById('cfg-url').value = SB_URL_DEFAULT;
-      document.getElementById('cfg-key').value = SB_KEY_DEFAULT;
-      document.getElementById('setup-card').style.display = 'flex';
-      const z = document.getElementById('setup-scan-zone');
-      if (z) z.style.display = 'none';
-    }
-  }
-
-  // Sur mobile Android, getUserMedia doit être déclenché par un geste utilisateur
-  // On affiche d'abord l'écran de config, puis on demande la caméra au tap
-  const cfg = JSON.parse(localStorage.getItem('baros_pointage_cfg') || 'null');
-  if (cfg && cfg.url && cfg.key && cfg.etab_id) {
-    document.getElementById('setup-card').style.display = 'none';
-    // Config existante : montrer bouton pour activer caméra
-    _requestCameraWithGesture(cfg);
-  } else {
-    document.getElementById('cfg-url').value = SB_URL_DEFAULT;
-    document.getElementById('cfg-key').value = SB_KEY_DEFAULT;
-    document.getElementById('setup-card').style.display = 'flex';
-    // Remplacer la zone scanner par un bouton tap
-    const scanZone = document.getElementById('setup-scan-zone');
-    if (scanZone) {
-      scanZone.innerHTML = '<div style="text-align:center;padding:16px 0">' +
-        '<button id="btn-cam" style="background:#b8ff00;color:#000;border:none;border-radius:12px;padding:16px 32px;font-size:16px;font-weight:700;cursor:pointer;width:100%">' +
-        '📷 Appuyez pour activer la caméra' +
-        '</button></div>';
-      document.getElementById('btn-cam').addEventListener('click', function() {
-        _doGetUserMedia(null);
-      });
-    }
-  }
-
-  function _requestCameraWithGesture(cfg) {
-    // Affiche un écran de démarrage avec bouton
-    document.body.insertAdjacentHTML('afterbegin',
-      '<div id="cam-start-overlay" style="position:fixed;inset:0;background:#0a0a0f;z-index:9998;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px">' +
-      '<div style="font-size:48px">📷</div>' +
-      '<div style="color:#fff;font-size:18px;font-weight:700">BarOS Pointage</div>' +
-      '<button id="btn-start-cam" style="background:#b8ff00;color:#000;border:none;border-radius:12px;padding:18px 40px;font-size:17px;font-weight:700;cursor:pointer">' +
-      'Appuyez pour démarrer' +
-      '</button></div>'
-    );
-    document.getElementById('btn-start-cam').addEventListener('click', function() {
-      document.getElementById('cam-start-overlay').remove();
-      _doGetUserMedia(cfg);
-    });
-  }
-
-  function _doGetUserMedia(cfg) {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      _startWithoutCamera('navigator.mediaDevices indisponible');
-      return;
-    }
-    // Chaîne de fallback : exact environment → ideal environment → any
-    const attempts = [
-      { video: { facingMode:{exact:'environment'}, width:{ideal:1920}, height:{ideal:1080}, frameRate:{ideal:30} } },
-      { video: { facingMode:{ideal:'environment'}, width:{ideal:1280}, height:{ideal:720},  frameRate:{ideal:30} } },
-      { video: { width:{ideal:1280}, height:{ideal:720} } },
-    ];
-    function tryNext(i) {
-      if (i >= attempts.length) { _startWithoutCamera('Aucune caméra accessible'); return; }
-      navigator.mediaDevices.getUserMedia(attempts[i])
-        .then(stream => {
-          sharedStream = stream;
-          if (cfg) startApp(cfg); else startSetupScanner();
-        })
-        .catch(() => tryNext(i + 1));
-    }
-    tryNext(0);
-  }
-})();
-
-// ══════════════════════════════════════════════════
-//  STREAM PARTAGÉ (une seule permission caméra)
-// ══════════════════════════════════════════════════
-let sharedStream = null;   // obtenu une fois dans init()
-
-// ══════════════════════════════════════════════════
-//  SCANNER SETUP (réutilise sharedStream)
-// ══════════════════════════════════════════════════
-let setupAnimFrame = null;
-const _setupCanvas = document.createElement('canvas');
-const _setupCtx    = _setupCanvas.getContext('2d', { willReadFrequently: true });
-
-function startSetupScanner() {
-  if (!sharedStream) return;
-  const container = document.getElementById('setup-qr-reader');
-  if (!container) return;
-
-  const video = document.createElement('video');
-  video.setAttribute('autoplay', '');
-  video.setAttribute('muted', '');
-  video.setAttribute('playsinline', '');
-  video.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:8px;display:block;';
-  container.appendChild(video);
-  video.srcObject = sharedStream;   // ← stream déjà autorisé, pas de nouvelle demande
-  video.play();
-
-  (function tick() {
-    if (!setupAnimFrame && setupAnimFrame !== 0) return; // stoppé
-    if (video.readyState >= video.HAVE_ENOUGH_DATA) {
-      _setupCanvas.width  = video.videoWidth;
-      _setupCanvas.height = video.videoHeight;
-      _setupCtx.drawImage(video, 0, 0);
-      const img  = _setupCtx.getImageData(0, 0, _setupCanvas.width, _setupCanvas.height);
-      const code = jsQR(img.data, img.width, img.height, { inversionAttempts: 'attemptBoth' });
-      if (code) { onSetupQrScan(code.data); return; }
-    }
-    setupAnimFrame = requestAnimationFrame(tick);
-  })();
-  setupAnimFrame = 0; // marquer comme actif
-}
-
-function stopSetupScanner() {
-  cancelAnimationFrame(setupAnimFrame);
-  setupAnimFrame = null;
-  // Ne PAS arrêter sharedStream — il sera réutilisé par le scanner principal
-}
-
-function onSetupQrScan(text) {
-  try {
-    const payload = JSON.parse(text);
-    if (payload.t !== 'baros-cfg') return; // pas un QR BarOS
-    // Arrêter le scanner de setup
-    stopSetupScanner();
-    // Sauvegarder et démarrer
-    const cfg = { url: payload.u, key: payload.k, etab_id: payload.e };
-    localStorage.setItem('baros_pointage_cfg', JSON.stringify(cfg));
-    document.getElementById('setup-card').style.display = 'none';
-    // Feedback visuel
-    if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
-    startApp(cfg);
-  } catch(e) {
-    // QR invalide — ignorer silencieusement
-  }
-}
-
-function saveSetup() {
-  const url  = document.getElementById('cfg-url').value.trim();
-  const key  = document.getElementById('cfg-key').value.trim();
-  const etab = document.getElementById('cfg-etab').value.trim();
-  if (!url || !key || !etab) { alert('Veuillez remplir tous les champs.'); return; }
-  stopSetupScanner();
-  const cfg = { url, key, etab_id: etab };
-  localStorage.setItem('baros_pointage_cfg', JSON.stringify(cfg));
-  document.getElementById('setup-card').style.display = 'none';
-  startApp(cfg);
-}
-
-async function startApp(cfg) {
-  const { createClient } = supabase;
-  db = createClient(cfg.url, cfg.key);
-  ETAB_ID = cfg.etab_id;
-
-  // Charger le nom de l'établissement
-  try {
-    const { data } = await db.from('etabs').select('nom').eq('id', ETAB_ID).single();
-    ETAB_NOM = data?.nom || 'BarOS';
-  } catch(e) { ETAB_NOM = 'BarOS'; }
-  document.getElementById('hdr-etab').textContent = ETAB_NOM + ' — Pointage';
-
-  await refreshCounters();
-  startScanner();
-  updateOfflineBadge();
-}
-
-// ══════════════════════════════════════════════════
-//  HORLOGE
-// ══════════════════════════════════════════════════
-function updateClock() {
-  const now  = new Date();
-  document.getElementById('hdr-time').textContent =
-    now.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
-  document.getElementById('hdr-date').textContent =
-    now.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' });
-}
-
-function todayStr() {
-  return new Date().toISOString().slice(0, 10);
-}
-
-function nowTime() {
-  return new Date().toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
-}
-
-// ══════════════════════════════════════════════════
-//  SCANNER QR PRINCIPAL (réutilise sharedStream)
-// ══════════════════════════════════════════════════
-let mainAnimFrame = null;
-const _mainCanvas = document.getElementById('qr-canvas');
-const _mainCtx    = _mainCanvas.getContext('2d', { willReadFrequently: true });
-
-
-// ══════════════════════════════════════════════════
-//  TORCHE / FLASHLIGHT
-// ══════════════════════════════════════════════════
-let _torchOn = false;
-async function toggleTorch() {
-  if (!sharedStream) return;
-  const track = sharedStream.getVideoTracks()[0];
-  if (!track) return;
-  const caps = track.getCapabilities ? track.getCapabilities() : {};
-  if (!caps.torch) {
-    // Torche non supportée — ignorer silencieusement
-    const btn = document.getElementById('btn-torch');
-    if (btn) { btn.style.opacity = '0.3'; btn.title = 'Torche non supportée'; }
-    return;
-  }
-  _torchOn = !_torchOn;
-  try {
-    await track.applyConstraints({ advanced: [{ torch: _torchOn }] });
-    const btn = document.getElementById('btn-torch');
-    if (btn) btn.style.background = _torchOn ? 'rgba(200,245,90,.35)' : 'rgba(0,0,0,.55)';
-  } catch(e) { _torchOn = !_torchOn; }
-}
-
-// ── Réduction d'échelle pour scan rapide QR petits ──
-function _scaleCtx(srcCtx, sw, sh, dw, dh) {
-  try {
-    const tmp = document.createElement('canvas');
-    tmp.width = dw; tmp.height = dh;
-    const ctx = tmp.getContext('2d');
-    ctx.drawImage(srcCtx.canvas, 0, 0, sw, sh, 0, 0, dw, dh);
-    return ctx.getImageData(0, 0, dw, dh);
-  } catch(e) { return null; }
-}
-
-function startScanner() {
-  if (!sharedStream) {
-    showErr('Caméra inaccessible', 'Autorisez l\'accès à la caméra dans les paramètres du navigateur.');
-    return;
-  }
-  const container = document.getElementById('qr-reader');
-
-  const video = document.createElement('video');
-  video.setAttribute('autoplay', '');
-  video.setAttribute('muted', '');
-  video.setAttribute('playsinline', '');
-  container.appendChild(video);
-  video.srcObject = sharedStream;   // ← même stream, zéro demande supplémentaire
-  video.play();
-
-  (function tick() {
-    if (video.readyState >= video.HAVE_ENOUGH_DATA) {
-      _mainCanvas.width  = video.videoWidth;
-      _mainCanvas.height = video.videoHeight;
-      _mainCtx.drawImage(video, 0, 0);
-      if (!scanCooldown) {
-        // Tentative 1 : résolution native (précis, bonne distance)
-        const img = _mainCtx.getImageData(0, 0, _mainCanvas.width, _mainCanvas.height);
-        let code = jsQR(img.data, img.width, img.height, { inversionAttempts: 'attemptBoth' });
-
-        // Tentative 2 : image réduite 50% (rapide, QR petits/loin)
-        if (!code && _mainCanvas.width > 640) {
-          const sw = Math.round(_mainCanvas.width * 0.5);
-          const sh = Math.round(_mainCanvas.height * 0.5);
-          const small = _scaleCtx(_mainCtx, _mainCanvas.width, _mainCanvas.height, sw, sh);
-          if (small) code = jsQR(small.data, sw, sh, { inversionAttempts: 'attemptBoth' });
-        }
-
-        if (code) onScanSuccess(code.data);
-      }
-    }
-    mainAnimFrame = requestAnimationFrame(tick);
-  })();
-}
-
-async function onScanSuccess(decodedText) {
-  if (scanCooldown) return;
-  scanCooldown = true;
-
-  // Vibration tactile
-  if (navigator.vibrate) navigator.vibrate(60);
-
-  await handleScan(decodedText);
-
-  // Cooldown 4s pour éviter rescans immédiats
-  setTimeout(() => { scanCooldown = false; }, 4000);
-}
-
-// ══════════════════════════════════════════════════
-//  LOGIQUE POINTAGE
-// ══════════════════════════════════════════════════
-async function handleScan(qrText) {
-  // Extraire l'ID : format "BAROS-EMP-<uuid>" ou juste "<uuid>"
-  const empId = qrText.startsWith('BAROS-EMP-')
-    ? qrText.replace('BAROS-EMP-', '')
-    : qrText;
-
-  const now     = new Date();
-  const heure   = now.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
-  const today   = todayStr();
-
-  // ── 1. Chercher l'employé (online ou cache local) ──
-  let emp = null;
-  if (navigator.onLine && db) {
-    try {
-      const { data } = await db.from('employes')
-        .select('id,nom,role,photo,plages_horaires')
-        .eq('id', empId)
-        .eq('etab_id', ETAB_ID)
-        .single();
-      if (data) {
-        const plages = (() => { try { return JSON.parse(data.plages_horaires||'[]'); } catch(e){ return []; } })();
-        emp = {
-          ...data,
-          poste: data.role,
-          photo_url: data.photo || null,
-          heure_debut: plages[0]?.debut || null,
-          heure_fin:   plages[0]?.fin   || null,
-        };
-        cacheEmp(emp);
-      }
-    } catch(e) {}
-  } else {
-    emp = getCachedEmp(empId);
-  }
-
-  if (!emp) {
-    showErrCard('Badge non reconnu', 'Ce QR code ne correspond à aucun employé enregistré dans le système.');
-    return;
-  }
-
-  // ── 2. Vérifier s'il a déjà pointé aujourd'hui ──
-  let pointageExistant = null;
-  if (navigator.onLine && db) {
-    try {
-      const { data } = await db.from('pointages')
-        .select('*')
-        .eq('employe_id', empId)
-        .eq('date_pointage', today)
-        .order('created_at', { ascending: true })
-        .limit(1)
-        .single();
-      pointageExistant = data;
-    } catch(e) {}
-  } else {
-    pointageExistant = getOfflinePointage(empId, today);
-  }
-
-  // ── 3. Décider : arrivée ou sortie ──
-  const isArrivee = !pointageExistant || !!pointageExistant.heure_arrivee && !pointageExistant.heure_sortie === false;
-  const isSortie  = pointageExistant && pointageExistant.heure_arrivee && !pointageExistant.heure_sortie;
-  const action    = isSortie ? 'sortie' : 'arrivee';
-
-  // ── 4. Calculer retard / avance ──
-  let statutTemps = 'ok';
-  let deltaMin = 0;
-  if (action === 'arrivee' && emp.heure_debut) {
-    const [hP, mP] = emp.heure_debut.split(':').map(Number);
-    const [hA, mA] = heure.split(':').map(Number);
-    deltaMin = (hA * 60 + mA) - (hP * 60 + mP);
-    if (deltaMin > 10)       statutTemps = 'retard';
-    else if (deltaMin < -5)  statutTemps = 'avance';
-  }
-
-  // ── 5. Enregistrer ──
-  const record = {
-    employe_id:    empId,
-    etab_id:       ETAB_ID,
-    date_pointage: today,
-    heure_arrivee: action === 'arrivee' ? heure : (pointageExistant?.heure_arrivee || null),
-    heure_sortie:  action === 'sortie'  ? heure : null,
-    statut:        statutTemps,
-  };
-
-  if (navigator.onLine && db) {
-    try {
-      if (action === 'arrivee') {
-        await db.from('pointages').upsert(record, { onConflict: 'employe_id,date_pointage' });
-      } else {
-        await db.from('pointages')
-          .update({ heure_sortie: heure })
-          .eq('employe_id', empId)
-          .eq('date_pointage', today);
-      }
-    } catch(e) {
-      storeOffline(record, action);
-    }
-  } else {
-    storeOffline(record, action);
-  }
-
-  // ── 6. Afficher la carte résultat ──
-  showResultCard(emp, action, heure, statutTemps, deltaMin);
-  await refreshCounters();
-
-  // Mettre à jour le dernier scan
-  const label = action === 'arrivee' ? '✅ Arrivée' : '🏁 Sortie';
-  document.getElementById('last-scan-txt').textContent =
-    `${label} de ${emp.nom} enregistrée à ${heure}`;
-}
-
-// ══════════════════════════════════════════════════
-//  AFFICHAGE CARTE RÉSULTAT
-// ══════════════════════════════════════════════════
-function showResultCard(emp, action, heure, statutTemps, deltaMin) {
-  clearTimeout(resultTimer);
-
-  // Statut badge
-  const statusEl = document.getElementById('rc-status');
-  if (action === 'arrivee') {
-    if (statutTemps === 'retard') {
-      statusEl.className = 'rc-status retard';
-      statusEl.textContent = '⚠️ Retard';
-    } else if (statutTemps === 'avance') {
-      statusEl.className = 'rc-status avance';
-      statusEl.textContent = '⏰ En avance';
-    } else {
-      statusEl.className = 'rc-status arrive';
-      statusEl.textContent = '✅ Arrivée';
-    }
-  } else {
-    statusEl.className = 'rc-status sortie';
-    statusEl.textContent = '🏁 Sortie';
-  }
-
-  // Photo
-  const photoEl = document.getElementById('rc-photo');
-  if (emp.photo_url) {
-    photoEl.innerHTML = `<img src="${emp.photo_url}" alt="${emp.nom}" onerror="this.parentElement.textContent='👤'">`;
-  } else {
-    photoEl.textContent = '👤';
-  }
-
-  // Infos
-  document.getElementById('rc-nom').textContent   = emp.nom;
-  document.getElementById('rc-poste').textContent = emp.poste || 'Employé';
-
-  // Heure
-  document.getElementById('rc-time-lbl').textContent = action === 'arrivee' ? "Heure d'arrivée" : "Heure de sortie";
-  document.getElementById('rc-time-val').textContent = heure;
-
-  // Planning
-  const planEl = document.getElementById('rc-planning');
-  if (emp.heure_debut || emp.heure_fin) {
-    planEl.innerHTML = [
-      emp.heure_debut ? `<div class="rc-plng-item"><div class="rc-plng-lbl">Début prévu</div><div class="rc-plng-val">${emp.heure_debut}</div></div>` : '',
-      emp.heure_fin   ? `<div class="rc-plng-item"><div class="rc-plng-lbl">Fin prévue</div><div class="rc-plng-val">${emp.heure_fin}</div></div>` : '',
-    ].join('');
-    planEl.style.display = 'flex';
-  } else {
-    planEl.style.display = 'none';
-  }
-
-  // Alerte retard/avance
-  const alertEl = document.getElementById('rc-alert');
-  if (action === 'arrivee' && statutTemps !== 'ok') {
-    alertEl.style.display = 'block';
-    if (statutTemps === 'retard') {
-      alertEl.className = 'rc-alert retard';
-      alertEl.textContent = `⚠️ Retard de ${deltaMin} min par rapport au planning`;
-    } else {
-      alertEl.className = 'rc-alert avance';
-      alertEl.textContent = `⏰ En avance de ${Math.abs(deltaMin)} min`;
-    }
-  } else if (action === 'arrivee') {
-    alertEl.style.display = 'block';
-    alertEl.className = 'rc-alert ok';
-    alertEl.textContent = '✅ À l\'heure — Bonne journée !';
-  } else {
-    alertEl.style.display = 'none';
-  }
-
-  // Afficher la carte
-  document.getElementById('result-card').classList.add('show');
-
-  // Barre de fermeture auto (4 secondes)
-  const fillEl = document.getElementById('rc-close-fill');
-  fillEl.style.transition = 'none';
-  fillEl.style.width = '100%';
-  requestAnimationFrame(() => {
-    fillEl.style.transition = 'width 4s linear';
-    fillEl.style.width = '0%';
-  });
-
-  resultTimer = setTimeout(closeResult, 4200);
-  document.getElementById('result-card').onclick = closeResult;
-}
-
-function closeResult() {
-  document.getElementById('result-card').classList.remove('show');
-  clearTimeout(resultTimer);
-}
-
-// ══════════════════════════════════════════════════
-//  COMPTEURS JOURNALIERS
-// ══════════════════════════════════════════════════
-async function refreshCounters() {
-  if (!navigator.onLine || !db) return;
-  try {
-    const { data } = await db.from('pointages')
-      .select('heure_arrivee,heure_sortie,statut')
-      .eq('etab_id', ETAB_ID)
-      .eq('date_pointage', todayStr());
-
-    const rows = data || [];
-    const presents = rows.filter(r => r.heure_arrivee && !r.heure_sortie).length;
-    const sorties  = rows.filter(r => r.heure_sortie).length;
-    const retards  = rows.filter(r => r.statut === 'retard').length;
-
-    document.getElementById('cnt-presents').textContent = presents;
-    document.getElementById('cnt-sorties').textContent  = sorties;
-    document.getElementById('cnt-retards').textContent  = retards;
-  } catch(e) {}
-}
-
-// ══════════════════════════════════════════════════
-//  CACHE LOCAL (mode hors-ligne)
-// ══════════════════════════════════════════════════
-function cacheEmp(emp) {
-  const cache = JSON.parse(localStorage.getItem('baros_emp_cache') || '{}');
-  cache[emp.id] = emp;
-  localStorage.setItem('baros_emp_cache', JSON.stringify(cache));
-}
-function getCachedEmp(id) {
-  const cache = JSON.parse(localStorage.getItem('baros_emp_cache') || '{}');
-  return cache[id] || null;
-}
-
-function storeOffline(record, action) {
-  const queue = JSON.parse(localStorage.getItem('baros_offline_pointages') || '[]');
-  queue.push({ ...record, action, ts: Date.now() });
-  localStorage.setItem('baros_offline_pointages', JSON.stringify(queue));
-  updateOfflineBadge();
-}
-
-function getOfflinePointage(empId, date) {
-  const queue = JSON.parse(localStorage.getItem('baros_offline_pointages') || '[]');
-  return queue.find(r => r.employe_id === empId && r.date_pointage === date) || null;
-}
-
-function updateOfflineBadge() {
-  const queue = JSON.parse(localStorage.getItem('baros_offline_pointages') || '[]');
-  const badge = document.getElementById('sync-badge');
-  if (queue.length > 0) {
-    badge.style.display = 'block';
-    document.getElementById('sync-count').textContent = queue.length;
-  } else {
-    badge.style.display = 'none';
-  }
-}
-
-async function syncOffline() {
-  if (!navigator.onLine || !db) return;
-  const queue = JSON.parse(localStorage.getItem('baros_offline_pointages') || '[]');
-  if (!queue.length) return;
-
-  let synced = 0;
-  const remaining = [];
-
-  for (const item of queue) {
-    try {
-      if (item.action === 'arrivee') {
-        await db.from('pointages').upsert({
-          employe_id: item.employe_id,
-          etab_id: item.etab_id,
-          date_pointage: item.date_pointage,
-          heure_arrivee: item.heure_arrivee,
-          statut: item.statut,
-        }, { onConflict: 'employe_id,date_pointage' });
-      } else {
-        await db.from('pointages')
-          .update({ heure_sortie: item.heure_sortie })
-          .eq('employe_id', item.employe_id)
-          .eq('date_pointage', item.date_pointage);
-      }
-      synced++;
-    } catch(e) {
-      remaining.push(item);
-    }
-  }
-
-  localStorage.setItem('baros_offline_pointages', JSON.stringify(remaining));
-  updateOfflineBadge();
-  if (synced > 0) {
-    await refreshCounters();
-    // Flash court de confirmation
-    document.getElementById('offline-bar').style.background = 'var(--gn)';
-    document.getElementById('offline-bar').style.display = 'block';
-    document.getElementById('offline-bar').textContent = `✅ ${synced} pointage(s) synchronisé(s)`;
-    setTimeout(() => {
-      document.getElementById('offline-bar').style.display = 'none';
-      document.getElementById('offline-bar').style.background = '';
-    }, 2500);
-  }
-}
-
-// ══════════════════════════════════════════════════
-//  ERREURS
-// ══════════════════════════════════════════════════
-function showErrCard(title, msg) {
-  document.getElementById('err-title').textContent = title;
-  document.getElementById('err-msg').textContent   = msg;
-  document.getElementById('err-card').style.display = 'flex';
-  setTimeout(closeErr, 4000);
-}
-
-function showErr(title, msg) {
-  showErrCard(title, msg);
-}
-
-function closeErr() {
-  document.getElementById('err-card').style.display = 'none';
-}
-</script>
-
-<!-- ═══════════════════════════════════════════════════════
-     PWA — Service Worker Registration
-     Ajouté lors de la migration PWA. Ne modifie aucune logique.
-═══════════════════════════════════════════════════════ -->
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => {
-        console.log('[BarOS PWA] SW enregistré :', reg.scope);
-        // Détection mise à jour SW disponible
-        reg.addEventListener('updatefound', () => {
-          const newWorker = reg.installing;
-          newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              // Un nouveau SW est prêt — on peut proposer le rechargement
-              console.log('[BarOS PWA] Nouvelle version disponible.');
-            }
-          });
-        });
-      })
-      .catch(err => console.warn('[BarOS PWA] SW non enregistré :', err));
-  });
-
-  // Écoute les messages du SW (ex: mise à jour)
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    window.location.reload();
-  });
-}
-</script>
-
-</body>
-</html>
+const SB_KEY_DEFAULT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5eGRmbXVscmdobGFuZXRmY3h5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3ODE3MTgsImV4cCI6MjA5NDM1NzcxOH0.lXMWH
