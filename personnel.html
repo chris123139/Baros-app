@@ -16,6 +16,8 @@
 <title>BarOS Personnel</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- BAROS QR FIX — Bibliothèque QR code pour génération badges employés -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 <style>
 :root{--bg:#0a0a0f;--s1:#12121a;--s2:#1a1a26;--s3:#22222f;--bd:rgba(255,255,255,0.08);--bd2:rgba(255,255,255,0.14);--tx:#f0eff5;--mt:rgba(240,239,245,0.45);--ac:#c8f55a;--dg:#ff5e5e;--gn:#4ade80;--wn:#ffb444;--inf:#5ab4ff;--r:14px;--rs:10px}
 
@@ -210,6 +212,72 @@ body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg
 
 ::-webkit-scrollbar{width:0}
 
+/* ══════════════════════════════════════════════════════════════
+   MULTI-RÔLES — Ajouté progressivement. N'écrase aucun style.
+   © 2025 Christophe OLOCK BELANG — BarOS v4.0
+══════════════════════════════════════════════════════════════ */
+
+/* ROLE CHIP HEADER */
+.role-chip{border-radius:20px;padding:3px 9px;font-size:9px;font-weight:700;white-space:nowrap;flex-shrink:0}
+
+/* ── CUISINE ──────────────────────────────────────────────── */
+.cuisine-card{background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.cuisine-card.nouveau{border-left:3px solid var(--inf)}
+.cuisine-card.en-prepa{border-left:3px solid var(--wn);animation:cuis-pulse 2s infinite}
+@keyframes cuis-pulse{0%,100%{border-left-color:var(--wn)}50%{border-left-color:rgba(255,180,68,.3)}}
+.cuisine-badge{background:var(--s2);border-radius:8px;padding:4px 9px;font-size:11px;font-weight:700}
+.cuis-badge-dot{background:var(--dg);color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;font-weight:700;margin-left:4px}
+
+/* ── VIGILE ───────────────────────────────────────────────── */
+.vig-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+.vig-stat{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:14px 12px;text-align:center}
+.vig-stat-v{font-size:26px;font-weight:800;font-family:system-ui;line-height:1}
+.vig-stat-l{font-size:10px;color:var(--mt);margin-top:4px}
+.vig-export-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+.vig-export-btn{background:rgba(90,180,255,.1);border:1px solid rgba(90,180,255,.22);color:var(--inf);border-radius:var(--rs);padding:9px 13px;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit;flex:1;min-width:90px}
+.vig-export-btn:active{background:rgba(90,180,255,.25);transform:scale(.96)}
+.vig-emp-row{display:flex;align-items:center;gap:10px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--rs);padding:10px 12px;margin-bottom:6px}
+.vig-emp-row.absent{opacity:.45;border-style:dashed}
+.vig-emp-row.retard{border-color:rgba(255,180,68,.4)}
+.vig-emp-row.suspect{border-color:var(--dg);background:rgba(255,94,94,.04)}
+.scan-row{display:flex;align-items:center;gap:9px;padding:11px 12px;border-bottom:1px solid var(--bd)}
+.scan-row:last-child{border:none}
+.scan-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.scan-type-ic{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.scan-info{flex:1;min-width:0}
+.scan-nom{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scan-role{font-size:10px;color:var(--mt)}
+.scan-status{font-size:9px;padding:2px 8px;border-radius:10px;font-weight:700;white-space:nowrap;display:inline-block;margin-top:2px}
+.ss-ok{background:rgba(74,222,128,.15);color:var(--gn)}
+.ss-late{background:rgba(255,180,68,.15);color:var(--wn)}
+.ss-absent{background:rgba(255,94,94,.10);color:var(--dg)}
+.ss-suspect{background:rgba(255,94,94,.22);color:var(--dg);animation:pulse-s 1.2s infinite}
+@keyframes pulse-s{0%,100%{opacity:1}50%{opacity:.5}}
+.alert-vig{background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--rs);padding:12px 14px;margin-bottom:8px}
+.alert-vig.critical{border-color:rgba(255,94,94,.5);background:rgba(255,94,94,.03)}
+.alert-vig.warning{border-color:rgba(255,180,68,.4)}
+.alert-vig.info{border-color:rgba(90,180,255,.3)}
+.vig-filter-bar{padding:10px 12px;border-bottom:1px solid var(--bd);display:flex;gap:6px;overflow-x:auto;flex-shrink:0}
+
+/* ── CHEF / DIRECTEUR ─────────────────────────────────────── */
+.team-card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.team-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.team-info{flex:1;min-width:0}
+.team-nom{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.team-role{font-size:10px;color:var(--mt)}
+.team-rank{font-size:14px;font-weight:800;color:var(--mt);width:18px;flex-shrink:0;text-align:center}
+.dir-kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px}
+.dir-kpi{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:14px 12px}
+.dir-kpi-v{font-size:22px;font-weight:800;font-family:system-ui;line-height:1.1}
+.dir-kpi-l{font-size:10px;color:var(--mt);margin-top:4px}
+.dir-bar-row{margin-bottom:10px}
+.dir-bar-track{height:5px;background:var(--bd);border-radius:3px;overflow:hidden;margin-top:4px}
+.dir-bar-fill{height:100%;border-radius:3px;transition:width .5s ease}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:var(--rs);border:1px solid var(--bd);background:var(--s1);color:var(--tx);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .12s}
+.btn:active{transform:scale(.95)}
+.btn-gn{background:rgba(74,222,128,.12);border-color:rgba(74,222,128,.3);color:var(--gn)}
+.btn-ac{background:rgba(200,245,90,.12);border-color:rgba(200,245,90,.3);color:var(--ac)}
+
 /* IMPRESSION THERMIQUE */
 @media print {
   @page { size: var(--print-width, 80mm) auto; margin: 2mm 3mm; }
@@ -278,17 +346,71 @@ body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg
 .receipt-print-browser { background:rgba(200,245,90,0.08);color:#c8f55a;border-left:1px solid rgba(255,255,255,0.07); }
 .receipt-close { background:rgba(255,255,255,0.04);color:rgba(240,239,245,0.45);border-left:1px solid rgba(255,255,255,0.07); }
 
-/* ═══════════════════ APPELS MODULE ════════════════════ */
-.appel-card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:10px;transition:border-color .2s}
-.appel-card.pending{border-left:3px solid var(--dg)}
-.appel-card.accepted{border-left:3px solid var(--wn)}
+/* ═══════════════════ APPELS MODULE — BAROS CLIENT CALL SYSTEM ═══════════════════ */
+/* TABLE CALL MANAGEMENT · CLIENT MESSAGE SYSTEM · ADDITION REQUEST · REALTIME CALLS */
+
+.appel-card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:10px;transition:all .2s;position:relative;overflow:hidden}
+.appel-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.appel-card.pending::before{background:var(--dg)}
+.appel-card.accepted::before{background:var(--wn)}
+.appel-card.completed::before{background:var(--gn)}
+.appel-card.rejected::before{background:var(--mt)}
+
+/* URGENCE — alerte rouge pulsante */
+.appel-card.urgence-pending{background:rgba(255,94,94,.06);border-color:rgba(255,94,94,.4);animation:urgPulse 1.6s infinite}
+@keyframes urgPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,94,94,0)}50%{box-shadow:0 0 0 6px rgba(255,94,94,.15)}}
+.appel-card.urgence-pending::before{background:var(--dg);width:4px}
+
 .appel-card-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .appel-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.appel-timer{font-family:Syne,sans-serif;font-size:11px;font-weight:700}
-.appel-btns{display:flex;gap:6px;flex-wrap:wrap}
+.appel-timer{font-size:11px;font-weight:700;white-space:nowrap}
+
+/* Badge type appel */
+.appel-type-chip{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-bottom:6px}
+.atc-serveuse{background:rgba(124,108,255,.15);color:#7c6cff}
+.atc-addition{background:rgba(200,245,90,.12);color:var(--ac)}
+.atc-message{background:rgba(90,180,255,.12);color:var(--inf)}
+.atc-urgence{background:rgba(255,94,94,.15);color:var(--dg)}
+.atc-commande{background:rgba(255,180,68,.12);color:var(--wn)}
+
+/* Message client — CLIENT MESSAGE SYSTEM */
+.appel-msg-box{background:var(--s2);border-radius:var(--rs);padding:9px 12px;margin:8px 0;font-size:12px;color:var(--tx);border-left:3px solid var(--inf);font-style:italic;line-height:1.5}
+
+/* Bannière "Pris en charge par" — SERVEUSE ASSIGNMENT */
+.appel-taken-banner{background:rgba(255,180,68,.1);border:1px solid rgba(255,180,68,.25);border-radius:var(--rs);padding:7px 12px;font-size:11px;color:var(--wn);display:flex;align-items:center;gap:6px;margin-bottom:8px}
+
+/* Addition breakdown — ADDITION REQUEST */
+.addition-card{background:rgba(200,245,90,.06);border:1px solid rgba(200,245,90,.2);border-radius:var(--rs);padding:12px;margin:8px 0}
+.addition-line{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.addition-line:last-child{border:none}
+.addition-total{display:flex;justify-content:space-between;font-size:15px;font-weight:800;padding:8px 0 2px;margin-top:4px;border-top:1px solid rgba(200,245,90,.3)}
+
+/* Boutons workflow */
+.appel-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.btn-appel-accept{flex:2;padding:10px;border-radius:var(--rs);font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:inherit;background:rgba(74,222,128,.15);color:var(--gn);transition:all .12s}
+.btn-appel-accept:active{transform:scale(.95)}
+.btn-appel-reject{flex:1;padding:10px;border-radius:var(--rs);font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:inherit;background:rgba(255,94,94,.1);color:var(--dg);transition:all .12s}
+.btn-appel-reject:active{transform:scale(.95)}
+.btn-appel-done{flex:2;padding:10px;border-radius:var(--rs);font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:inherit;background:rgba(200,245,90,.15);color:var(--ac);transition:all .12s}
+.btn-appel-done:active{transform:scale(.95)}
+.btn-appel-invoice{padding:8px 12px;border-radius:var(--rs);font-size:11px;font-weight:600;cursor:pointer;border:1px solid rgba(90,180,255,.3);background:rgba(90,180,255,.08);color:var(--inf);font-family:inherit;transition:all .12s}
+.btn-appel-invoice:active{transform:scale(.95)}
+
+/* Appels stats manager — MODULE MANAGER */
+.appels-stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+.appels-stat-card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--rs);padding:12px}
+.appels-stat-v{font-size:20px;font-weight:700;line-height:1}
+.appels-stat-l{font-size:10px;color:var(--mt);margin-top:4px}
+
 .appel-empty{text-align:center;padding:32px 16px;color:var(--mt);font-size:13px}
 #view-appels .scroll{padding-bottom:100px}
 .appels-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:10px;font-size:10px;font-weight:700;background:var(--dg);color:#fff;margin-left:4px}
+
+/* Filtres appels */
+.appels-filter-bar{display:flex;gap:5px;padding:10px 12px 4px;overflow-x:auto;flex-shrink:0;border-bottom:1px solid var(--bd)}
+.appels-filter-btn{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--s1);color:var(--mt);white-space:nowrap;transition:all .15s;font-family:inherit}
+.appels-filter-btn.on{background:var(--dg);border-color:var(--dg);color:#fff}
+.appels-filter-btn.on-acc{background:var(--wn);border-color:var(--wn);color:#0a0a0f}
 </style>
 </head>
 <body>
@@ -417,19 +539,123 @@ body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg
       <div class="stat-grid" id="bar-hist-stats" style="margin-bottom:12px"></div>
       <div class="sec-lbl">Commandes traitées aujourd'hui</div>
       <div id="bar-hist-list"></div>
+      <!-- BAR INVENTORY — Section stock bar injectée dynamiquement -->
+      <div id="bar-stock-section"></div>
     </div>
   </div>
 </div>
 
 
-  <!-- APPELS CLIENTS -->
-  <div id="view-appels" class="hide">
-    <div class="scroll" style="padding:14px">
+  <!-- APPELS CLIENTS — BAROS CLIENT CALL SYSTEM -->
+  <div id="view-appels" class="hide" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
+    <!-- Filtres rapides — TABLE CALL MANAGEMENT -->
+    <div class="appels-filter-bar" id="appels-filter-bar">
+      <button class="appels-filter-btn on" id="apf-all" onclick="setAppelFilter('all',this)">Tous</button>
+      <button class="appels-filter-btn" id="apf-pending" onclick="setAppelFilter('pending',this)">🔴 Attente</button>
+      <button class="appels-filter-btn" id="apf-accepted" onclick="setAppelFilter('accepted',this)">🟡 En cours</button>
+      <button class="appels-filter-btn" id="apf-addition" onclick="setAppelFilter('addition',this)">💰 Additions</button>
+      <button class="appels-filter-btn" id="apf-urgence" onclick="setAppelFilter('urgence',this)">🚨 Urgences</button>
+    </div>
+    <!-- Stats manager rapides -->
+    <div id="appels-mgr-strip" style="display:none;padding:8px 12px 0;flex-shrink:0"></div>
+    <!-- Liste appels -->
+    <div class="scroll" style="padding:12px 12px 100px">
       <div id="appels-list">
-        <div class="appel-empty">Chargement…</div>
+        <div class="appel-empty">⏳ Chargement…</div>
       </div>
     </div>
   </div>
+
+<!-- ═══════════════════════════════════════════════════════
+     VUES MULTI-RÔLES — Ajoutées progressivement v4.0
+     N'écrase aucune vue existante.
+═══════════════════════════════════════════════════════ -->
+
+<!-- ── CUISINE ──────────────────────────────────────────── -->
+<div id="view-cuisine" class="hide" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
+  <div style="display:flex;border-bottom:1px solid var(--bd);flex-shrink:0">
+    <div id="ctab-att" onclick="showCuisTab('att')" style="flex:1;padding:10px 6px 8px;text-align:center;cursor:pointer;font-size:11px;color:var(--ac);border-bottom:2px solid var(--ac)">
+      <span style="font-size:16px;display:block;margin-bottom:2px">🔥</span>En cuisine <span id="cuis-badge-att" class="cuis-badge-dot"></span>
+    </div>
+    <div id="ctab-pret" onclick="showCuisTab('pret')" style="flex:1;padding:10px 6px 8px;text-align:center;cursor:pointer;font-size:11px;color:var(--mt);border-bottom:2px solid transparent">
+      <span style="font-size:16px;display:block;margin-bottom:2px">✅</span>Prêt &amp; servi
+    </div>
+    <div id="ctab-hist" onclick="showCuisTab('hist')" style="flex:1;padding:10px 6px 8px;text-align:center;cursor:pointer;font-size:11px;color:var(--mt);border-bottom:2px solid transparent">
+      <span style="font-size:16px;display:block;margin-bottom:2px">📋</span>Stats
+    </div>
+  </div>
+  <div id="cuisview-att" class="scroll"><div id="cuisine-list"></div></div>
+  <div id="cuisview-pret" class="scroll hide"><div id="cuisine-pret-list"></div></div>
+  <div id="cuisview-hist" class="scroll hide">
+    <div class="stat-grid" id="cuis-stats" style="margin-bottom:12px"></div>
+    <div class="sec-lbl">Historique du jour</div>
+    <div id="cuis-hist-list"></div>
+    <!-- CUISINE INVENTORY — Section stock cuisine injectée dynamiquement -->
+    <div id="cuis-stock-section"></div>
+  </div>
+</div>
+
+<!-- ── SÉCURITÉ VIGILE ──────────────────────────────────── -->
+<div id="view-securite" class="hide">
+  <div class="scroll" style="padding:12px 12px 90px">
+    <div class="vig-grid" id="vig-stats-grid"></div>
+    <div class="vig-export-row">
+      <button class="vig-export-btn" onclick="exportPDF_vigile('jour')">📄 Rapport Jour</button>
+      <button class="vig-export-btn" onclick="exportPDF_vigile('semaine')">📄 Semaine</button>
+      <button class="vig-export-btn" onclick="exportPDF_vigile('mois')">📄 Mois</button>
+    </div>
+    <div class="sec-lbl">Statut employés</div>
+    <div id="vig-emp-list"></div>
+  </div>
+</div>
+
+<!-- ── SCANS VIGILE ─────────────────────────────────────── -->
+<div id="view-scans" class="hide" style="display:flex;flex-direction:column;overflow:hidden">
+  <div class="vig-filter-bar">
+    <button class="mf-btn on" id="vig-f-all"     onclick="setVigFilter('all',this)">Tous</button>
+    <button class="mf-btn"    id="vig-f-entree"   onclick="setVigFilter('entree',this)">→ Entrées</button>
+    <button class="mf-btn"    id="vig-f-sortie"   onclick="setVigFilter('sortie',this)">← Sorties</button>
+    <button class="mf-btn"    id="vig-f-retard"   onclick="setVigFilter('retard',this)">⏰ Retards</button>
+    <button class="mf-btn"    id="vig-f-suspect"  onclick="setVigFilter('suspect',this)">⚠️ Suspects</button>
+  </div>
+  <div class="scroll" style="padding:0 0 80px"><div id="scans-list"></div></div>
+</div>
+
+<!-- ── ALERTES VIGILE ───────────────────────────────────── -->
+<div id="view-alertes-vig" class="hide">
+  <div class="scroll" style="padding:12px 12px 90px">
+    <div id="alertes-vig-list"></div>
+  </div>
+</div>
+
+<!-- ── ÉQUIPE (Chef + Directeur) ────────────────────────── -->
+<div id="view-equipe" class="hide">
+  <div class="scroll" style="padding:12px 12px 90px">
+    <div class="stat-grid" id="equipe-stats" style="margin-bottom:12px"></div>
+    <div class="sec-lbl">Équipe en service</div>
+    <div id="equipe-list"></div>
+  </div>
+</div>
+
+<!-- ── COMMANDES GLOBALES (Chef + Directeur) ────────────── -->
+<div id="view-cmd-all" class="hide">
+  <div class="scroll" style="padding:12px 12px 90px">
+    <div class="stat-grid" id="cmd-all-stats" style="margin-bottom:12px"></div>
+    <div class="sec-lbl">Toutes les commandes du jour</div>
+    <div id="cmd-all-list"></div>
+  </div>
+</div>
+
+<!-- ── DIRECTION DASHBOARD ──────────────────────────────── -->
+<div id="view-direction" class="hide">
+  <div class="scroll" style="padding:12px 12px 90px">
+    <div class="dir-kpi-grid" id="dir-kpi"></div>
+    <div class="sec-lbl" style="margin-bottom:10px">Performance équipe</div>
+    <div id="dir-team"></div>
+    <div class="sec-lbl" style="margin-top:14px;margin-bottom:10px">Alertes récentes</div>
+    <div id="dir-alertes"></div>
+  </div>
+</div>
 
 <!-- CONFIRMATION -->
 <div class="confirm-ov hide" id="confirm-ov">
@@ -478,6 +704,15 @@ let CU=null,ETAB=null,EMPS=[],PRODS=[],NIVEAUX=[];
 let curStep=1,selTable=null,selPay='Cash',panier={},selClient=null,clientsCache=[];
 let realtimeChannel=null;
 let menuCatFilter='Tous';
+
+// ═══════════════════════════════════════════════════════
+// BAROS BAR/CUISINE SPLIT — Variables globales
+// panierGlace stocke l'état glacé pour chaque produit bar
+// ═══════════════════════════════════════════════════════
+let panierGlace = {}; // { produit_id: true/false }
+
+// BAROS STOCK SYSTEM — Cache stock temps réel
+let stockCache = {}; // { nom_produit: { stock_restant, stock_initial, ... } }
 
 const fmt=n=>Math.round(n||0).toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.');
 const ini=n=>(n||'?').split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
@@ -644,24 +879,41 @@ function startApp(){
   document.getElementById('hdr-name').textContent=CU.nom;
   document.getElementById('hdr-etab').textContent=ETAB.nom;
 
-  // Construire nav selon rôle
+  // ── Système multi-rôles v4.0 ──────────────────────────────
+  // ROLE_CONFIG défini dans le bloc script suivant.
+  // Fallback serveuse si getRoleKey non encore disponible.
+  const _roleKey = (typeof getRoleKey === 'function') ? getRoleKey() : 'serveuse';
+  const _roleConf = (typeof ROLE_CONFIG !== 'undefined' && ROLE_CONFIG[_roleKey]) || {
+    color:'#7c6cff',
+    tabs:[
+      {id:'commande',ic:'🧾',lbl:'Commander'},
+      {id:'historique',ic:'📊',lbl:'Mes ventes'},
+      {id:'badges',ic:'🏅',lbl:'Badges'},
+      {id:'appels',ic:'🔔',lbl:'Appels'},
+    ]
+  };
   const navEl=document.getElementById('nav');navEl.innerHTML='';
-  const tabs=[
-    {id:'commande',ic:'🧾',lbl:'Commander'},
-    {id:'historique',ic:'📊',lbl:'Mes ventes'},
-    {id:'badges',ic:'🏅',lbl:'Badges'},
-  ];
-  if(isBarman())tabs.push({id:'barman',ic:'🍺',lbl:'Bar'});
-  tabs.push({id:'appels',ic:'🔔',lbl:'Appels'});
+  const tabs=_roleConf.tabs;
   tabs.forEach(t=>{
     const tab=document.createElement('div');tab.className='nav-tab';tab.id='tab-'+t.id;
     tab.innerHTML=`<span class="nav-ic">${t.ic}</span>${t.lbl}`;
     tab.onclick=()=>showTab(t.id);
     navEl.appendChild(tab);
   });
+  // Badge de rôle dans le header
+  const _oldChip=document.getElementById('hdr-role-chip');if(_oldChip)_oldChip.remove();
+  const _chip=document.createElement('div');
+  _chip.id='hdr-role-chip';_chip.className='role-chip';
+  _chip.style.cssText=`background:${_roleConf.color}1a;border:1px solid ${_roleConf.color}33;color:${_roleConf.color}`;
+  _chip.textContent=CU.role;
+  document.getElementById('hdr-right').prepend(_chip);
 
-  showTab('commande');
+  showTab(tabs[0].id);
   refreshCA();
+  // BAROS STOCK SYSTEM — Charger le cache stock au démarrage
+  loadStockCache().then(() => { if (curStep === 2) renderStep(2); });
+  // REALTIME INVENTORY — Canal stock temps réel
+  startStockRealtime();
   
   // Temps réel Supabase
   realtimeChannel=db.channel('cmd-rt-'+ETAB.id)
@@ -703,39 +955,76 @@ function startApp(){
       })
     .subscribe();
 
-  // ── Appels clients temps réel ──
+  // ── Appels clients temps réel — REALTIME CALLS ──
   db.channel('appels-pers-'+ETAB.id)
     .on('postgres_changes',{event:'INSERT',schema:'public',table:'appels',filter:`etab_id=eq.${ETAB.id}`},
       payload => {
-        const a = payload.new;
-        const icons = {serveuse:'🔔',addition:'💳',commande:'🛒',message:'💬'};
-        playBeepAppel();
-        toast(`${icons[a.type]||'🔔'} Appel ${a.type} — ${a.table_nom}`, 'var(--dg)');
+        const a = payload.new || {};
+        // BAROS CLIENT CALL SYSTEM — Son + vibration selon type
+        if (a.type === 'urgence') {
+          // URGENCE — alerte triple beep aigu + vibration mobile
+          playBeepUrgence();
+          if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 400]);
+          toast('🚨 URGENCE — ' + a.table_nom + ' !', 'var(--dg)');
+        } else {
+          playBeepAppel();
+          const icons = {serveuse:'🔔', addition:'💰', message:'💬', commande:'🛒'};
+          const labels = {serveuse:'Appel serveuse', addition:'Demande addition', message:'Message client', commande:'Commande'};
+          toast(`${icons[a.type]||'🔔'} ${labels[a.type]||a.type} — ${a.table_nom}`, 'var(--dg)');
+        }
         updateAppelsBadge();
+        // REALTIME CALLS — Rafraîchir si vue active
         const cv = document.querySelector('[id^="view-"]:not(.hide)');
-        if(cv?.id==='view-appels') loadAppelsPers();
+        if (cv?.id === 'view-appels') loadAppelsPers();
+        // Rafraîchir stats manager si vue direction/équipe active
+        if (cv?.id === 'view-direction') injectAppelsMgrStats();
       })
     .on('postgres_changes',{event:'UPDATE',schema:'public',table:'appels',filter:`etab_id=eq.${ETAB.id}`},
       () => {
         updateAppelsBadge();
         const cv = document.querySelector('[id^="view-"]:not(.hide)');
-        if(cv?.id==='view-appels') loadAppelsPers();
+        if (cv?.id === 'view-appels') loadAppelsPers();
+        if (cv?.id === 'view-direction') injectAppelsMgrStats();
       })
     .subscribe();
+
+  // ── Init module spécifique au rôle ─────────────────────────
+  if(typeof ROLE_CONFIG!=='undefined' && ROLE_CONFIG[_roleKey]?.onStart){
+    ROLE_CONFIG[_roleKey].onStart();
+  }
 }
 
+// Liste exhaustive — existants + nouveaux rôles v4.0
+const ALL_VIEW_IDS=[
+  'commande','historique','badges','barman','appels',
+  'cuisine','securite','scans','alertes-vig','equipe','cmd-all','direction'
+];
+
 function showTab(id){
-  ['commande','historique','badges','barman','appels'].forEach(v=>{
+  ALL_VIEW_IDS.forEach(v=>{
     const el=document.getElementById('view-'+v);if(el)el.classList.add('hide');
     const tab=document.getElementById('tab-'+v);if(tab)tab.classList.remove('on');
   });
   const el=document.getElementById('view-'+id);if(el)el.classList.remove('hide');
   const tab=document.getElementById('tab-'+id);if(tab)tab.classList.add('on');
+  // ── Handlers existants (inchangés) ──
   if(id==='commande'){resetCmd();}
   if(id==='historique')loadHistorique();
   if(id==='badges')renderBadges();
   if(id==='barman')showBarTab(curBarTab);
   if(id==='appels')loadAppelsPers();
+  // ── Nouveaux handlers v4.0 ──────────
+  if(id==='cuisine')showCuisTab('att');
+  if(id==='securite')loadSecurite();
+  if(id==='scans')loadScans(vigScanFilter);
+  if(id==='alertes-vig')loadAlertesVig();
+  if(id==='equipe')loadEquipe();
+  if(id==='cmd-all')loadCmdAll();
+  if(id==='direction')loadDirection();
+  // MODULE MANAGER — Injecter stats appels à l'entrée des vues chef/directeur
+  if((id==='direction'||id==='equipe') && typeof injectAppelsMgrStats==='function'){
+    setTimeout(injectAppelsMgrStats, 400); // délai pour laisser loadDirection/loadEquipe finir
+  }
 }
 
 // ===== CA TEMPS RÉEL =====
@@ -757,6 +1046,8 @@ const STEPS=['Table','Articles','Récap'];
 function resetCmd(){
   curStep=1;selTable=null;selPay='Cash';panier={};selClient=null;
   menuCatFilter='Tous';
+  // BAROS BAR/CUISINE SPLIT — Vider aussi le cache glacé
+  panierGlace = {};
   renderStepsBar();renderStep(1);
   document.getElementById('tot-lbl').textContent='Sélectionne une table';
   document.getElementById('tot-val').textContent='';
@@ -797,16 +1088,39 @@ function renderStep(step){
     if(!filtered.length){
       html += '<div class="empty">Aucun produit dans cette catégorie</div>';
     } else {
+      // BAROS BAR/CUISINE SPLIT — Rendu produits avec type_service + OPTION GLACÉ
       html += `<div class="prods-grid">${filtered.map(p=>{
         const qty=panier[p.id]||0;
-        return `<div class="prod-btn${qty>0?' sel':''}" id="pb-${p.id}">
-          <span class="prod-ic">${p.icone}</span>
-          <div style="flex:1">
-            <div class="prod-nm">${p.nom}</div>
-            <div class="prod-pr">${fmt(p.prix)} F</div>
-            ${qty>0?`<div class="qty-row"><div class="qb" onclick="changeQty('${p.id}',-1,${p.prix},event)">−</div><div class="qv">${qty}</div><div class="qb" onclick="changeQty('${p.id}',1,${p.prix},event)">+</div></div>`:''}
+        // AUTO ROUTING — Détermination automatique du type_service
+        const ts = getProdTypeService(p);
+        const isBar = ts === 'bar';
+        // OPTION GLACÉ — uniquement pour les produits bar
+        const glaceVal = panierGlace[p.id] || false;
+        // BAROS STOCK SYSTEM — Badge alerte stock faible inline
+        const sc = stockCache[p.stock_nom || p.nom];
+        const stockBadge = sc && sc.quantite <= 0
+          ? '<span style="position:absolute;top:5px;left:5px;font-size:9px;background:rgba(255,94,94,.9);color:#fff;border-radius:4px;padding:1px 5px">\u274c Épuisé</span>'
+          : sc && sc.quantite <= (sc.seuil_alerte || 5)
+            ? '<span style="position:absolute;top:5px;left:5px;font-size:9px;background:rgba(255,180,68,.9);color:#0a0a0f;border-radius:4px;padding:1px 5px">\u26a0\ufe0f Bas</span>'
+            : '';
+        return `<div class="prod-btn${qty>0?' sel':''}" id="pb-${p.id}" style="position:relative;flex-direction:column;align-items:flex-start">
+          ${stockBadge}
+          <div style="display:flex;align-items:center;gap:9px;width:100%">
+            <span class="prod-ic">${p.icone}</span>
+            <div style="flex:1;min-width:0">
+              <div class="prod-nm">${p.nom}</div>
+              <div class="prod-pr">${fmt(p.prix)} F</div>
+              <div style="font-size:9px;color:${isBar?'var(--inf)':'var(--wn)'};margin-top:1px">${isBar?'🍺 Bar':'🍳 Cuisine'}</div>
+            </div>
+            ${qty>0?`<div class="prod-badge" style="position:static;margin-left:auto;flex-shrink:0">${qty}</div>`:''}
           </div>
-          ${qty>0?`<div class="prod-badge">${qty}</div>`:''}
+          ${qty>0?`<div class="qty-row" style="margin-top:6px"><div class="qb" onclick="changeQty('${p.id}',-1,${p.prix},event)">−</div><div class="qv">${qty}</div><div class="qb" onclick="changeQty('${p.id}',1,${p.prix},event)">+</div></div>`:''}
+          ${qty>0 && isBar
+            ? `<div style="margin-top:5px;display:flex;align-items:center;gap:5px;cursor:pointer" onclick="event.stopPropagation();toggleGlace('${p.id}')">
+                <div style="width:16px;height:16px;border-radius:4px;border:1.5px solid ${glaceVal?'var(--inf)':'var(--bd2)'};background:${glaceVal?'rgba(90,180,255,.2)':'transparent'};display:flex;align-items:center;justify-content:center;font-size:9px">${glaceVal?'\u2713':''}</div>
+                <span style="font-size:10px;color:${glaceVal?'var(--inf)':'var(--mt)'}">🧊 Glacé</span>
+              </div>`
+            : ''}
         </div>`;
       }).join('')}</div>`;
     }
@@ -987,18 +1301,63 @@ async function decrementStock(produit, qty=1){
 // VALIDER
 async function validerCmd(){
   const btn=document.getElementById('btn-next');btn.disabled=true;btn.textContent='Envoi...';
-  const items=Object.entries(panier).map(([id,qty])=>{const p=PRODS.find(x=>x.id===id);return p?p.nom+(qty>1?' ×'+qty:''):''}).filter(Boolean).join(', ');
+
+  // ═══════════════════════════════════════════════════════
+  // BAROS BAR/CUISINE SPLIT — Séparation automatique des articles
+  // AUTO ROUTING — La serveuse ne choisit rien manuellement
+  // ═══════════════════════════════════════════════════════
+  const itemsBar = [];    // Articles destinés au module BAR
+  const itemsCuisine = []; // Articles destinés au module CUISINE
+  const itemsAll = [];    // Tous les articles (pour affichage global)
+
+  for (const [id, qty] of Object.entries(panier)) {
+    const p = PRODS.find(x => x.id === id);
+    if (!p) continue;
+    const ts = getProdTypeService(p);
+    // OPTION GLACÉ — Format : "🧊 Coca ×2" ou "🌡️ Guinness ×1"
+    const isGlace = ts === 'bar' && (panierGlace[id] || false);
+    const glacePrefix = ts === 'bar' ? (isGlace ? '🧊 ' : '🌡️ ') : '';
+    const label = glacePrefix + p.nom + (qty > 1 ? ' ×' + qty : '');
+    itemsAll.push(label);
+    if (ts === 'bar') itemsBar.push(label);
+    else itemsCuisine.push(label);
+  }
+
+  const items = itemsAll.join(', ');
+  const itemsBarStr = itemsBar.join(', ');
+  const itemsCuisineStr = itemsCuisine.join(', ');
+
   const tot=calcTot();
   // Remise fidélité
   const tier=selClient?getClientTier(selClient.points||0):null;
   const remise=tier?tier.remise:0;
   const montantFinal=remise>0?Math.round(tot*(1-remise/100)):tot;
-  // Décrément stock
+
+  // BAROS STOCK SYSTEM — Décrément stock pour chaque produit vendu
   for(const [id,qty] of Object.entries(panier)){
     const p=PRODS.find(x=>x.id===id);
     if(p) await decrementStock(p, qty);
   }
-  const {error}=await db.from('commandes').insert({etab_id:ETAB.id,table_nom:selTable,articles:items,employe_id:CU.id,employe_nom:CU.nom,montant:montantFinal,remise:tot-montantFinal,paiement:selPay,statut:'Nouveau',heure:nowT(),date_cmd:today()});
+
+  // AUTO ROUTING — Insertion commande principale (tous articles)
+  // Le champ articles_bar et articles_cuisine permettent au barman/cuisinier
+  // de ne voir QUE ce qui les concerne
+  const cmdPayload = {
+    etab_id: ETAB.id,
+    table_nom: selTable,
+    articles: items,
+    articles_bar: itemsBarStr || null,
+    articles_cuisine: itemsCuisineStr || null,
+    employe_id: CU.id,
+    employe_nom: CU.nom,
+    montant: montantFinal,
+    remise: tot - montantFinal,
+    paiement: selPay,
+    statut: 'Nouveau',
+    heure: nowT(),
+    date_cmd: today()
+  };
+  const {error}=await db.from('commandes').insert(cmdPayload);
   if(error){toast('Erreur: '+error.message,'var(--dg)');btn.disabled=false;btn.textContent='✓ Envoyer au bar';return;}
   // Créditer points + mise à jour visite client
   if(selClient){
@@ -1014,7 +1373,8 @@ async function validerCmd(){
   }
   // Confirmation screen
   const confLines=Object.entries(panier).map(([id,qty])=>{const p=PRODS.find(x=>x.id===id);return p?`<div>${p.icone} ${p.nom} ×${qty} — ${fmt(p.prix*qty)} F</div>`:''}).join('');
-  const remiseLine=remise>0?`<div style="margin-top:6px;color:var(--ac);font-size:12px">${tier.ic} Remise ${tier.label} −90${remise}% = −${fmt(tot-montantFinal)} F</div>`:'';
+  // Fix typo: "−90${remise}" → "−${remise}"
+  const remiseLine=remise>0?`<div style="margin-top:6px;color:var(--ac);font-size:12px">${tier.ic} Remise ${tier.label} −${remise}% = −${fmt(tot-montantFinal)} F</div>`:'';
   const ptsLine=selClient?`<div style="margin-top:5px;color:#a78bfa;font-size:11px">⭐ +${Math.floor(montantFinal/1000)*10||10} pts ajoutés — total: ${(selClient.points||0)+(Math.floor(montantFinal/1000)*10||10)} pts</div>`:'';
   document.getElementById('conf-sub').textContent=selTable+' · '+selPay+(selClient?' · '+selClient.nom:'');
   document.getElementById('conf-detail').innerHTML=confLines+remiseLine+`<div style="margin-top:7px;font-weight:600;color:var(--ac)">Total: ${fmt(montantFinal)} F</div>`+ptsLine;
@@ -1113,7 +1473,19 @@ async function loadBarman(){
   const n = (cmds||[]).length;
   const badge = document.getElementById('bar-badge-att');
   if (badge) badge.textContent = n > 0 ? n : '';
-  document.getElementById('barman-list').innerHTML=n?(cmds||[]).map(c=>`
+  // BAROS BAR/CUISINE SPLIT — Le barman ne voit QUE les articles bar
+  // AFFICHAGE COMMANDES — icônes 🧊/🌡️ déjà encodées dans les labels
+  document.getElementById('barman-list').innerHTML=n&&(cmds||[]).map(c=>{
+    const articlesAff = c.articles_bar || c.articles || '';
+    const hasBar = articlesAff.trim().length > 0;
+    if (!hasBar && c.articles_bar !== undefined) return '';
+    const lignes = articlesAff.split(',').map(a => {
+      const t = a.trim(); if (!t) return '';
+      if (t.startsWith('🧊')) return `<span style="color:var(--inf)">${t}</span>`;
+      if (t.startsWith('🌡️')) return `<span style="color:var(--wn)">${t}</span>`;
+      return `🔹 ${t}`;
+    }).filter(Boolean).join('<br>');
+    return `
     <div class="bar-cmd" id="bc-${c.id}">
       <div class="bar-top">
         <div>
@@ -1122,7 +1494,7 @@ async function loadBarman(){
         </div>
         <div class="bar-time">${c.heure||''} <span class="pill ${c.statut==='Nouveau'?'p-n':'p-p'}">${c.statut}</span></div>
       </div>
-      <div class="bar-items">${(c.articles||'').split(',').map(a=>`🔹 ${a.trim()}`).join('<br>')}</div>
+      <div class="bar-items" style="line-height:1.9">${lignes||'—'}</div>
       <div style="font-weight:700;color:var(--ac);margin-bottom:9px;font-size:15px">${fmt(c.montant)} F</div>
       <div class="bar-actions">
         ${c.statut==='Nouveau'?`<button class="bar-btn bar-prep" onclick="updCmd('${c.id}','En prépa')">🍳 En prépa</button>`:''}
@@ -1132,7 +1504,8 @@ async function loadBarman(){
       <div style="margin-top:7px">
         <button style="width:100%;padding:8px;border-radius:var(--rs);background:rgba(200,245,90,.08);border:1px solid rgba(200,245,90,.25);color:var(--ac);font-size:12px;font-weight:600;cursor:pointer" onclick='showReceipt(${JSON.stringify(c)})'>🧾 Générer facture</button>
       </div>
-    </div>`).join(''):'<div class="empty">✅ Aucune commande en attente</div>';
+    </div>`;
+  }).filter(Boolean).join('')||'<div class="empty">✅ Aucune commande en attente</div>';
   refreshCA();
 }
 
@@ -1535,6 +1908,341 @@ async function doPrintBT() {
   }
 }
 
+
+// ═══════════════════════════════════════════════════════════════════════
+// BAROS BAR/CUISINE SPLIT — Module complet
+// AUTO ROUTING · OPTION GLACÉ · BAROS STOCK SYSTEM · REALTIME INVENTORY
+// © 2025 Christophe OLOCK BELANG
+// ═══════════════════════════════════════════════════════════════════════
+
+// ── BAROS BAR/CUISINE SPLIT ──────────────────────────────────────────
+// Mots-clés qui identifient les catégories boissons (→ bar)
+const BAR_KEYWORDS = [
+  'bière','beer','coca','soda','jus','eau','vin','whisky','gin','vodka',
+  'rhum','rum','boisson','drink','cocktail','champagne','bier','sprite',
+  'fanta','tonic','juice','wine','brewski','alcool','malta','sucré',
+  'smoothie','shake','café','coffee','thé','tea','lait','milk','limon',
+  'orangina','schweppes','heineken','castel','guinness','33','regab',
+  'ngok','flag','ohlala','beaufort','mutzig','hr','primus','turbo king'
+];
+
+// Mots-clés cuisine (→ cuisine)
+const CUISINE_KEYWORDS = [
+  'pizza','burger','sandwich','poulet','chicken','poisson','fish','viande',
+  'meat','riz','plat','repas','meal','food','nourriture','shawarma','kebab',
+  'frites','salad','salade','spaghetti','pasta','yassa','ndolé','eru',
+  'sauce','soupe','soup','grillé','brochette','dibi','manioc','plantain',
+  'omelette','egg','oeuf','fufu','koki','mbongo','nkui','miondo'
+];
+
+/**
+ * BAROS BAR/CUISINE SPLIT
+ * Retourne le type_service d'un produit.
+ * Priorité : champ explicite → catégorie → mots-clés dans le nom.
+ * Fallback : "bar" (pour compatibilité totale avec anciens produits)
+ */
+function getProdTypeService(p) {
+  // 1. Champ explicite sur le produit (le manager peut le définir)
+  if (p.type_service === 'bar' || p.type_service === 'cuisine') return p.type_service;
+  // 2. Catégorie explicite
+  const cat = (p.categorie || '').toLowerCase();
+  if (cat.includes('boisson') || cat.includes('drink') || cat.includes('bar') || cat.includes('alcool')) return 'bar';
+  if (cat.includes('cuisine') || cat.includes('plat') || cat.includes('food') || cat.includes('repas')) return 'cuisine';
+  // 3. Mots-clés dans le nom du produit
+  const nom = (p.nom || '').toLowerCase();
+  for (const kw of CUISINE_KEYWORDS) { if (nom.includes(kw)) return 'cuisine'; }
+  for (const kw of BAR_KEYWORDS) { if (nom.includes(kw)) return 'bar'; }
+  // 4. Fallback : bar (les boissons sont plus courantes au comptoir)
+  return 'bar';
+}
+
+// ── OPTION GLACÉ ──────────────────────────────────────────────────────
+/**
+ * OPTION GLACÉ — Toggle glacé pour un produit bar
+ * Stocké dans panierGlace[id] = true/false
+ */
+function toggleGlace(prodId) {
+  panierGlace[prodId] = !panierGlace[prodId];
+  renderStep(2); // Re-render pour mettre à jour la checkbox
+}
+
+// ── BAROS STOCK SYSTEM — Chargement cache stock temps réel ───────────
+/**
+ * REALTIME INVENTORY — Charger le stock courant depuis Supabase
+ * Alimenté au démarrage et sur chaque changement realtime
+ */
+async function loadStockCache() {
+  if (!ETAB) return;
+  try {
+    const { data } = await db.from('stock').select('*').eq('etab_id', ETAB.id);
+    stockCache = {};
+    (data || []).forEach(s => { stockCache[s.nom] = s; });
+  } catch(e) {
+    // Table stock optionnelle — pas critique
+  }
+}
+
+// ── BAROS STOCK SYSTEM — Vues stock BAR et CUISINE ───────────────────
+
+/**
+ * REALTIME INVENTORY — Afficher vue stock bar dans la vue barman
+ * Appelé depuis le sous-onglet historique du barman
+ */
+function buildBarStockSection() {
+  // BAR INVENTORY — Produits bar avec leurs stocks
+  const prodsBar = PRODS.filter(p => getProdTypeService(p) === 'bar');
+  if (!prodsBar.length) return '';
+  let html = `<div class="sec-lbl" style="margin-top:14px">🍺 Inventaire Bar</div>`;
+  prodsBar.forEach(p => {
+    const s = stockCache[p.stock_nom || p.nom];
+    if (!s) return;
+    const rest = s.quantite || 0;
+    const init = s.quantite_initiale || s.quantite_initiale || rest;
+    const vendu = s.vendu_systeme || 0;
+    const pv = s.prix_vente || p.prix || 0;
+    const caRealise = vendu * pv;
+    const pct = init > 0 ? Math.round(rest / init * 100) : 0;
+    const col = rest <= 0 ? 'var(--dg)' : rest <= (s.seuil_alerte || 5) ? 'var(--wn)' : 'var(--gn)';
+    const alerte = rest <= 0 ? '❌ Rupture' : rest <= (s.seuil_alerte || 5) ? '⚠️ Stock faible' : '';
+    html += `<div style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--rs);padding:10px 12px;margin-bottom:7px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+        <div style="font-size:13px;font-weight:600">${p.icone || '🍺'} ${p.nom}</div>
+        ${alerte ? `<span style="font-size:10px;color:${col};font-weight:700">${alerte}</span>` : ''}
+      </div>
+      <div style="display:flex;gap:12px;font-size:11px;color:var(--mt);margin-bottom:5px">
+        <span>Stock : <strong style="color:${col}">${rest}</strong></span>
+        <span>Vendues : <strong style="color:var(--tx)">${vendu}</strong></span>
+        <span>CA : <strong style="color:var(--ac)">${fmt(caRealise)} F</strong></span>
+      </div>
+      <div style="height:3px;background:var(--bd);border-radius:2px">
+        <div style="height:100%;width:${pct}%;background:${col};border-radius:2px;transition:width .4s"></div>
+      </div>
+    </div>`;
+  });
+  return html;
+}
+
+/**
+ * CUISINE INVENTORY — Afficher vue stock cuisine dans les stats cuisine
+ */
+function buildCuisineStockSection() {
+  const prodsCuis = PRODS.filter(p => getProdTypeService(p) === 'cuisine');
+  if (!prodsCuis.length) return '';
+  let html = `<div class="sec-lbl" style="margin-top:14px">🍽️ Inventaire Cuisine</div>`;
+  prodsCuis.forEach(p => {
+    const s = stockCache[p.stock_nom || p.nom];
+    if (!s) return;
+    const rest = s.quantite || 0;
+    const init = s.quantite_initiale || rest;
+    const vendu = s.vendu_systeme || 0;
+    const pv = s.prix_vente || p.prix || 0;
+    const caRealise = vendu * pv;
+    const pct = init > 0 ? Math.round(rest / init * 100) : 0;
+    const col = rest <= 0 ? 'var(--dg)' : rest <= (s.seuil_alerte || 3) ? 'var(--wn)' : 'var(--gn)';
+    const alerte = rest <= 0 ? '❌ Rupture' : rest <= (s.seuil_alerte || 3) ? '⚠️ Stock faible' : '';
+    const unite = p.unite || s.unite || 'unité';
+    html += `<div style="background:var(--s1);border:1px solid ${rest<=0?'rgba(255,94,94,.4)':rest<=(s.seuil_alerte||3)?'rgba(255,180,68,.3)':'var(--bd)'};border-radius:var(--rs);padding:10px 12px;margin-bottom:7px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+        <div style="font-size:13px;font-weight:600">${p.icone || '🍽️'} ${p.nom}</div>
+        ${alerte ? `<span style="font-size:10px;color:${col};font-weight:700">${alerte}</span>` : ''}
+      </div>
+      <div style="display:flex;gap:12px;font-size:11px;color:var(--mt);flex-wrap:wrap;margin-bottom:5px">
+        <span>Stock : <strong style="color:${col}">${rest} ${unite}${rest>1?'s':''}</strong></span>
+        <span>Vendues : <strong style="color:var(--tx)">${vendu}</strong></span>
+        <span>CA : <strong style="color:var(--ac)">${fmt(caRealise)} F</strong></span>
+      </div>
+      <div style="height:3px;background:var(--bd);border-radius:2px">
+        <div style="height:100%;width:${pct}%;background:${col};border-radius:2px;transition:width .4s"></div>
+      </div>
+    </div>`;
+  });
+  return html;
+}
+
+// ── Injecter le stock dans les vues existantes ────────────────────────
+
+// Patch loadBarHist pour ajouter la section inventaire bar
+const _origLoadBarHist = loadBarHist;
+loadBarHist = async function() {
+  await _origLoadBarHist();
+  // BAR INVENTORY — Ajouter inventaire bar après stats
+  await loadStockCache();
+  const histEl = document.getElementById('barview-hist');
+  if (histEl) {
+    const existing = histEl.querySelector('#bar-stock-section');
+    if (existing) existing.remove();
+    const stockHTML = buildBarStockSection();
+    if (stockHTML) {
+      const div = document.createElement('div');
+      div.id = 'bar-stock-section';
+      div.innerHTML = stockHTML;
+      histEl.appendChild(div);
+    }
+  }
+};
+
+// ── REALTIME INVENTORY — Canal stock temps réel ───────────────────────
+function startStockRealtime() {
+  if (!ETAB) return;
+  db.channel('stock-rt-pers-' + ETAB.id)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'stock', filter: `etab_id=eq.${ETAB.id}` },
+      async () => {
+        await loadStockCache();
+        // Rafraîchir l'affichage produits si step 2
+        if (curStep === 2) renderStep(2);
+      })
+    .subscribe();
+}
+
+// ── HISTORIQUE PERSISTANT — Alertes stock ────────────────────────────
+// HISTORIQUE PERSISTANT — déjà géré par decrementStock existant
+// Les alertes sont sauvegardées dans la table 'alertes' de Supabase
+
+// ═══════════════════════════════════════════════════════════════════════
+// BAROS QR FIX — Génération QR employé robuste
+// EMPLOYEE QR GENERATION · QR ERROR HANDLING · MOBILE QR SUPPORT
+// ═══════════════════════════════════════════════════════════════════════
+
+/**
+ * BAROS QR FIX — Génère un QR code contenant les données employé complètes
+ * Format JSON : { employee_id, nom, role, etab_id, pin }
+ * Compatible Android, PWA, Chrome mobile
+ * Utilise qrcode-generator (déjà chargé dans le gestionnaire)
+ * Fallback sur canvas natif si bibliothèque absente
+ */
+function genererQREmploye(emp) {
+  return new Promise(resolve => {
+    try {
+      // EMPLOYEE QR GENERATION — Vérifications préalables obligatoires
+      if (!emp || !emp.id) {
+        console.warn('[BarOS QR] ID employé manquant');
+        resolve(null);
+        return;
+      }
+      if (!emp.nom || !emp.role || !emp.etab_id) {
+        console.warn('[BarOS QR] Données employé incomplètes');
+        resolve(null);
+        return;
+      }
+
+      // Format JSON attendu — contient toutes les infos nécessaires au pointage
+      const qrData = JSON.stringify({
+        employee_id: emp.id,
+        nom: emp.nom,
+        role: emp.role,
+        etab_id: emp.etab_id,
+        pin: emp.pin || null
+      });
+
+      const size = 400;
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = size;
+      const ctx = canvas.getContext('2d');
+
+      // QR ERROR HANDLING — Essayer qrcode-generator en premier
+      if (typeof qrcode !== 'undefined') {
+        try {
+          const qr = qrcode(0, 'H'); // Niveau H = correction max
+          qr.addData(qrData);
+          qr.make();
+          const count = qr.getModuleCount();
+          const cell = size / count;
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, size, size);
+          ctx.fillStyle = '#000000';
+          for (let row = 0; row < count; row++) {
+            for (let col = 0; col < count; col++) {
+              if (qr.isDark(row, col)) {
+                ctx.fillRect(
+                  Math.floor(col * cell), Math.floor(row * cell),
+                  Math.ceil(cell), Math.ceil(cell)
+                );
+              }
+            }
+          }
+          resolve(canvas.toDataURL('image/png'));
+          return;
+        } catch(e) {
+          console.warn('[BarOS QR] qrcode-generator échoué, fallback:', e);
+        }
+      }
+
+      // MOBILE QR SUPPORT — Fallback : QRious ou autre lib si disponible
+      if (typeof QRious !== 'undefined') {
+        const qr = new QRious({ element: canvas, value: qrData, size: size, level: 'H' });
+        resolve(canvas.toDataURL('image/png'));
+        return;
+      }
+
+      // Fallback ultime : QR basique via canvas (texte centré)
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, size, size);
+      ctx.fillStyle = '#000000';
+      ctx.font = 'bold 16px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('QR non disponible', size/2, size/2 - 10);
+      ctx.font = '12px monospace';
+      ctx.fillText('ID: ' + emp.id.slice(0, 16), size/2, size/2 + 10);
+      ctx.fillText(emp.nom, size/2, size/2 + 28);
+      resolve(canvas.toDataURL('image/png'));
+    } catch(e) {
+      console.error('[BarOS QR] Erreur génération:', e);
+      resolve(null);
+    }
+  });
+}
+
+/**
+ * BAROS QR FIX — Télécharger le QR code d'un employé
+ */
+function downloadQREmp(empId, empNom, qrSrc) {
+  const a = document.createElement('a');
+  a.href = qrSrc;
+  a.download = 'QR_' + (empNom || empId).replace(/\s+/g, '_') + '.png';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  toast('📥 QR téléchargé !', 'var(--gn)');
+}
+
+/**
+ * BAROS QR FIX — Imprimer le badge employé
+ * Ouvre une fenêtre d'impression avec le badge formaté
+ */
+function imprimerBadgeEmp(emp, qrSrc) {
+  const win = window.open('', '_blank', 'width=400,height=600');
+  if (!win) { toast('⚠️ Popup bloquée — autorisez les popups', 'var(--wn)'); return; }
+  win.document.write(`<!DOCTYPE html><html><head><title>Badge ${emp.nom}</title>
+  <style>
+    body{margin:0;background:#fff;font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh}
+    .badge{width:280px;border:2px solid #7c6cff;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.15)}
+    .badge-head{background:linear-gradient(135deg,#0a0a0f,#1a1a26);padding:16px;text-align:center}
+    .badge-logo{color:#c8f55a;font-size:20px;font-weight:900;letter-spacing:-1px}
+    .badge-etab{color:rgba(255,255,255,.5);font-size:10px;margin-top:2px}
+    .badge-body{padding:16px;text-align:center;background:#fff}
+    .badge-nom{font-size:18px;font-weight:800;color:#0a0a0f;margin-bottom:4px}
+    .badge-role{font-size:12px;color:#7c6cff;font-weight:600;margin-bottom:12px}
+    .badge-qr img{width:160px;height:160px;border:2px solid #eee;border-radius:8px}
+    .badge-foot{background:#f5f5f5;padding:8px;text-align:center;font-size:9px;color:#888}
+    @media print{body{min-height:auto}.badge{box-shadow:none}}
+  </style></head><body>
+  <div class="badge">
+    <div class="badge-head">
+      <div class="badge-logo">BarOS</div>
+      <div class="badge-etab">${(window.ETAB && window.ETAB.nom) || 'Établissement'}</div>
+    </div>
+    <div class="badge-body">
+      <div class="badge-nom">${emp.nom}</div>
+      <div class="badge-role">${emp.role}</div>
+      <div class="badge-qr"><img src="${qrSrc}" alt="QR Badge"></div>
+    </div>
+    <div class="badge-foot">© 2025 Christophe OLOCK BELANG · BarOS</div>
+  </div>
+  <script>window.onload=function(){window.print();}<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
 // ===== BOOT =====
 loadLogin();
 </script>
@@ -1587,12 +2295,33 @@ if('serviceWorker' in navigator && location.protocol !== 'blob:'){
 
 <script>
 // ═══════════════════════════════════════════════════════════════
-// APPELS MODULE — BarOS Personnel
-// ═══════════════════════════════════════════════════════════════
+// BAROS CLIENT CALL SYSTEM — BarOS Personnel v5.0
+// TABLE CALL MANAGEMENT · CLIENT MESSAGE SYSTEM
+// ADDITION REQUEST · REALTIME CALLS · SERVEUSE ASSIGNMENT
+// © 2025 Christophe OLOCK BELANG
+//
+// ── MIGRATION SQL SUPABASE REQUISE ──────────────────────────
+// Exécuter une seule fois dans l'éditeur SQL Supabase :
+//
+//   ALTER TABLE appels
+//     ADD COLUMN IF NOT EXISTS message_client    TEXT,
+//     ADD COLUMN IF NOT EXISTS prise_en_charge_par TEXT,
+//     ADD COLUMN IF NOT EXISTS prise_en_charge_at  TIMESTAMPTZ,
+//     ADD COLUMN IF NOT EXISTS completed_at        TIMESTAMPTZ,
+//     ADD COLUMN IF NOT EXISTS addition_detail     JSONB;
+//
+//   -- Statuts étendus (pending, accepted, completed, rejected)
+//   -- Types étendus  (serveuse, addition, message, urgence, commande)
+// ────────────────────────────────────────────────────────────
 
-let _appelsTimer = null;
+// ── Cache offline appels — Personnel s'ouvre même hors réseau ──
+let _appelsCache   = [];       // Dernier jeu d'appels chargé
+let _appelsTimer   = null;     // Timer de rafraîchissement
+let _appelFilter   = 'all';    // Filtre actif
+let _offlineMode   = false;    // Détection hors connexion
 
-// ── Son spécifique appels (distinct du beep barman) ───────────
+// ── Sons ──────────────────────────────────────────────────────
+// Son appel normal (3 dings)
 function playBeepAppel() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1609,16 +2338,45 @@ function playBeepAppel() {
   } catch(e) {}
 }
 
-// ── Mise à jour du badge dans l'onglet Appels ─────────────────
+// URGENCE — son triple aigu + rouge
+function playBeepUrgence() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 0.3, 0.6, 0.9].forEach(t => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.frequency.value = 1400; o.type = 'square';
+      g.gain.setValueAtTime(0, ctx.currentTime + t);
+      g.gain.linearRampToValueAtTime(0.45, ctx.currentTime + t + 0.02);
+      g.gain.linearRampToValueAtTime(0, ctx.currentTime + t + 0.22);
+      o.start(ctx.currentTime + t);
+      o.stop(ctx.currentTime + t + 0.25);
+    });
+  } catch(e) {}
+}
+
+// ── Constantes types/labels/icônes ────────────────────────────
+const APPEL_ICONS  = { serveuse:'🔔', addition:'💰', message:'💬', urgence:'🚨', commande:'🛒' };
+const APPEL_LABELS = { serveuse:'Appel serveuse', addition:'Demande d\'addition', message:'Message client', urgence:'⚠️ URGENCE', commande:'Nouvelle commande' };
+const APPEL_CHIPS  = { serveuse:'atc-serveuse', addition:'atc-addition', message:'atc-message', urgence:'atc-urgence', commande:'atc-commande' };
+const APPEL_STATUT_LABELS = { pending:'En attente', accepted:'Pris en charge', completed:'Terminé', rejected:'Refusé' };
+
+// ── Badge onglet Appels ───────────────────────────────────────
 async function updateAppelsBadge() {
   if (!ETAB) return;
-  const { count } = await db.from('appels')
-    .select('id', { count:'exact' })
-    .eq('etab_id', ETAB.id)
-    .eq('statut', 'pending');
+  let count = 0;
+  try {
+    const { count: c } = await db.from('appels')
+      .select('id', { count:'exact' })
+      .eq('etab_id', ETAB.id)
+      .eq('statut', 'pending');
+    count = c || 0;
+  } catch(e) {
+    // OFFLINE — utiliser cache local
+    count = _appelsCache.filter(a => a.statut === 'pending').length;
+  }
   const tab = document.getElementById('tab-appels');
   if (!tab) return;
-  // Retirer l'ancien badge s'il existe
   const old = tab.querySelector('.appels-badge');
   if (old) old.remove();
   if (count > 0) {
@@ -1629,85 +2387,1458 @@ async function updateAppelsBadge() {
   }
 }
 
-// ── Chargement et rendu des appels ───────────────────────────
+// ── Filtre appels ─────────────────────────────────────────────
+function setAppelFilter(filter, el) {
+  _appelFilter = filter;
+  document.querySelectorAll('.appels-filter-btn').forEach(b => {
+    b.classList.remove('on', 'on-acc');
+  });
+  if (el) {
+    el.classList.add(filter === 'accepted' ? 'on-acc' : 'on');
+  }
+  renderAppelsList(_appelsCache);
+}
+
+// ── Calcul addition table — ADDITION REQUEST ──────────────────
+async function calcAdditionTable(tableNom) {
+  if (!ETAB || !tableNom) return null;
+  try {
+    const { data: cmds } = await db.from('commandes')
+      .select('articles, montant, statut, employe_nom, heure, date_cmd, paiement')
+      .eq('etab_id', ETAB.id)
+      .eq('table_nom', tableNom)
+      .eq('date_cmd', today())
+      .neq('statut', 'Annulé')
+      .order('created_at', { ascending: true });
+
+    if (!cmds || !cmds.length) return { total: 0, lignes: [], cmds: [] };
+
+    // ADDITION REQUEST — Calcul cumulé boissons + nourriture
+    const totBoissons = cmds.reduce((acc, c) => {
+      if (!c.articles) return acc;
+      // Détecter les articles bar via mots-clés
+      const arts = c.articles.split(',').map(a => a.trim());
+      const barAmt = arts.filter(a => {
+        const al = a.toLowerCase();
+        return BAR_KEYWORDS.some(kw => al.includes(kw));
+      });
+      // Si articles_bar → utiliser montant bar (approx)
+      if (c.articles_bar && c.articles_bar.trim()) {
+        // Proportion : nb articles bar / total
+        const ratioBar = barAmt.length / Math.max(arts.length, 1);
+        return acc + Math.round(c.montant * ratioBar);
+      }
+      return acc;
+    }, 0);
+
+    const totCuisine = cmds.reduce((acc, c) => {
+      if (!c.articles) return acc;
+      const arts = c.articles.split(',').map(a => a.trim());
+      const cuisAmt = arts.filter(a => {
+        const al = a.toLowerCase();
+        return CUISINE_KEYWORDS.some(kw => al.includes(kw));
+      });
+      if (c.articles_cuisine && c.articles_cuisine.trim()) {
+        const ratioCuis = cuisAmt.length / Math.max(arts.length, 1);
+        return acc + Math.round(c.montant * ratioCuis);
+      }
+      return acc;
+    }, 0);
+
+    const total = cmds.reduce((acc, c) => acc + (c.montant || 0), 0);
+
+    // Lignes de détail
+    const lignes = cmds.map(c => ({
+      heure: c.heure || '',
+      articles: c.articles || '',
+      montant: c.montant || 0,
+      employe: c.employe_nom || '?',
+      paiement: c.paiement || ''
+    }));
+
+    return {
+      total,
+      totBoissons: totBoissons || Math.round(total * 0.6),
+      totCuisine: totCuisine || (total - (totBoissons || Math.round(total * 0.6))),
+      lignes,
+      cmds,
+      nbCommandes: cmds.length
+    };
+  } catch(e) {
+    console.warn('[BarOS Appels] calcAdditionTable erreur:', e);
+    return null;
+  }
+}
+
+// ── Chargement des appels ─────────────────────────────────────
 async function loadAppelsPers() {
   if (!ETAB) return;
   clearTimeout(_appelsTimer);
 
-  const { data } = await db.from('appels')
-    .select('*')
-    .eq('etab_id', ETAB.id)
-    .in('statut', ['pending','accepted'])
-    .order('created_at', { ascending: true });
-
-  const appels = data || [];
-  const list   = document.getElementById('appels-list');
-  if (!list) return;
+  let appels = [];
+  try {
+    const { data } = await db.from('appels')
+      .select('*')
+      .eq('etab_id', ETAB.id)
+      .in('statut', ['pending', 'accepted'])
+      .order('created_at', { ascending: true });
+    appels = data || [];
+    _appelsCache = appels; // HISTORIQUE APPELS — cache local
+    _offlineMode = false;
+  } catch(e) {
+    // OFFLINE MODE — utiliser le cache
+    appels = _appelsCache.filter(a => ['pending','accepted'].includes(a.statut));
+    _offlineMode = true;
+  }
 
   await updateAppelsBadge();
 
-  if (!appels.length) {
-    list.innerHTML = '<div class="appel-empty">✓ Aucun appel en attente</div>';
+  // Afficher bande stats manager si rôle directeur/chef
+  const rk = typeof getRoleKey === 'function' ? getRoleKey() : 'serveuse';
+  const mgrStrip = document.getElementById('appels-mgr-strip');
+  if (mgrStrip && (rk === 'directeur' || rk === 'chef' || rk === 'barman')) {
+    mgrStrip.style.display = 'block';
+    renderAppelsMgrStrip(appels);
+  }
+
+  renderAppelsList(appels);
+
+  // Rafraîchir toutes les 12 secondes (timers)
+  _appelsTimer = setTimeout(loadAppelsPers, 12000);
+}
+
+// ── Rendu liste appels ────────────────────────────────────────
+function renderAppelsList(appels) {
+  const list = document.getElementById('appels-list');
+  if (!list) return;
+
+  // Appliquer filtre
+  let filtered = appels;
+  if (_appelFilter === 'pending')  filtered = appels.filter(a => a.statut === 'pending');
+  if (_appelFilter === 'accepted') filtered = appels.filter(a => a.statut === 'accepted');
+  if (_appelFilter === 'addition') filtered = appels.filter(a => a.type === 'addition');
+  if (_appelFilter === 'urgence')  filtered = appels.filter(a => a.type === 'urgence');
+
+  if (!filtered.length) {
+    const msg = _appelFilter === 'urgence' ? '✅ Aucune urgence'
+               : _appelFilter === 'addition' ? '✅ Aucune demande d\'addition'
+               : '✅ Aucun appel en attente';
+    list.innerHTML = `<div class="appel-empty">${msg}${_offlineMode ? '<br><span style="font-size:10px;color:var(--wn)">Mode hors connexion</span>' : ''}</div>`;
     return;
   }
 
-  const icons  = { serveuse:'🔔', addition:'💳', commande:'🛒', message:'💬' };
-  const colors = { pending:'var(--dg)', accepted:'var(--wn)' };
-  const labels = { serveuse:'Appel serveuse', addition:'Demande addition', commande:'Commande', message:'Message' };
-  const now    = Date.now();
+  const now = Date.now();
+  list.innerHTML = filtered.map(a => buildAppelCard(a, now)).join('');
+}
 
-  list.innerHTML = appels.map(a => {
-    const age    = Math.round((now - new Date(a.created_at).getTime()) / 1000);
-    const ageStr = age < 60 ? age + 's' : Math.floor(age/60) + 'min ' + (age%60) + 's';
-    const col    = colors[a.statut] || 'var(--mt)';
-    const isPend = a.statut === 'pending';
-    const isAcc  = a.statut === 'accepted';
-    return `
-    <div class="appel-card ${a.statut}">
-      <div class="appel-card-head">
-        <div class="appel-icon" style="background:${col}18">${icons[a.type]||'🔔'}</div>
-        <div style="flex:1">
-          <div style="font-size:13px;font-weight:700">${a.table_nom}</div>
-          <div style="font-size:11px;color:var(--mt)">${labels[a.type]||a.type}</div>
-          ${a.message?`<div style="font-size:10px;color:var(--mt);margin-top:2px;font-style:italic">"${a.message}"</div>`:''}
-        </div>
-        <div class="appel-timer" style="color:${isPend?'var(--dg)':'var(--wn)'}">⏱ ${ageStr}</div>
+// ── Construire une carte appel ────────────────────────────────
+function buildAppelCard(a, now) {
+  const age    = Math.round((now - new Date(a.created_at).getTime()) / 1000);
+  const mins   = Math.floor(age / 60);
+  const secs   = age % 60;
+  const ageStr = age < 60 ? age + 's' : mins + 'min' + (secs > 0 ? ' ' + secs + 's' : '');
+  const isPend = a.statut === 'pending';
+  const isAcc  = a.statut === 'accepted';
+  const isUrgence = a.type === 'urgence';
+
+  // Couleur timer selon urgence
+  const timerCol = isUrgence ? 'var(--dg)' : isPend ? 'var(--dg)' : 'var(--wn)';
+  const cardExtraClass = isUrgence && isPend ? 'urgence-pending' : a.statut;
+
+  // Chip type
+  const chipClass = APPEL_CHIPS[a.type] || 'atc-serveuse';
+  const chipHtml = `<span class="appel-type-chip ${chipClass}">${APPEL_ICONS[a.type]||'🔔'} ${APPEL_LABELS[a.type]||a.type}</span>`;
+
+  // Message client — CLIENT MESSAGE SYSTEM
+  const msgHtml = a.message_client
+    ? `<div class="appel-msg-box">💬 "${a.message_client}"</div>`
+    : (a.message ? `<div class="appel-msg-box">💬 "${a.message}"</div>` : '');
+
+  // Bannière prise en charge — SERVEUSE ASSIGNMENT
+  let takenBanner = '';
+  if (isAcc && a.prise_en_charge_par) {
+    const isMine = CU && (a.employe_id === CU.id || a.prise_en_charge_par === CU.nom);
+    takenBanner = `<div class="appel-taken-banner">
+      👩‍💼 ${isMine ? '✓ Pris en charge par vous' : 'Déjà pris en charge par <strong>' + a.prise_en_charge_par + '</strong>'}
+    </div>`;
+  }
+
+  // Section addition — ADDITION REQUEST
+  let additionHtml = '';
+  if (a.type === 'addition' && a.addition_detail) {
+    try {
+      const det = typeof a.addition_detail === 'string' ? JSON.parse(a.addition_detail) : a.addition_detail;
+      additionHtml = `
+        <div class="addition-card">
+          <div style="font-size:11px;font-weight:700;color:var(--ac);margin-bottom:6px">💰 Détail addition — ${a.table_nom}</div>
+          <div class="addition-line"><span>🍺 Boissons</span><span style="color:var(--inf)">${fmt(det.totBoissons||0)} F</span></div>
+          <div class="addition-line"><span>🍽️ Cuisine</span><span style="color:var(--wn)">${fmt(det.totCuisine||0)} F</span></div>
+          <div class="addition-line"><span style="color:var(--mt);font-size:10px">${det.nbCommandes||''} commande(s)</span></div>
+          <div class="addition-total"><span>TOTAL</span><span style="color:var(--ac)">${fmt(det.total||0)} F</span></div>
+        </div>`;
+    } catch(e) {}
+  }
+
+  // Boutons selon statut et rôle
+  const isMineToAccept = isPend;
+  const isMineToComplete = isAcc && CU && (a.employe_id === CU.id || a.prise_en_charge_par === CU.nom);
+  const isOtherTaken = isAcc && !isMineToComplete;
+
+  let btnsHtml = '<div class="appel-btns">';
+  if (isMineToAccept) {
+    btnsHtml += `<button class="btn-appel-accept" onclick="acceptAppelPers('${a.id}')">✓ Prendre en charge</button>`;
+    btnsHtml += `<button class="btn-appel-reject" onclick="rejectAppelPers('${a.id}')">✗ Refuser</button>`;
+  }
+  if (isMineToComplete) {
+    btnsHtml += `<button class="btn-appel-done" onclick="completeAppelPers('${a.id}')">✅ Terminé</button>`;
+  }
+  if (isOtherTaken) {
+    // Autre serveuse l'a pris — can still see invoice for addition
+  }
+  // Bouton facture si addition ou commande complète
+  if (a.type === 'addition' || a.type === 'commande') {
+    btnsHtml += `<button class="btn-appel-invoice" onclick="showInvoiceFromAppel('${a.id}','${(a.table_nom||'').replace(/'/g,"&#39;")}')">🧾 Voir facture</button>`;
+  }
+  if (a.type === 'addition' && !a.addition_detail) {
+    btnsHtml += `<button class="btn-appel-invoice" style="background:rgba(200,245,90,.1);color:var(--ac);border-color:rgba(200,245,90,.3)" onclick="loadAndShowAddition('${a.id}','${(a.table_nom||'').replace(/'/g,"&#39;")}')">💰 Calculer addition</button>`;
+  }
+  btnsHtml += '</div>';
+
+  return `
+  <div class="appel-card ${cardExtraClass}" id="ac-${a.id}">
+    <div class="appel-card-head">
+      <div class="appel-icon" style="background:${isUrgence?'rgba(255,94,94,.15)':isPend?'rgba(255,94,94,.1)':'rgba(255,180,68,.1)'}">
+        ${APPEL_ICONS[a.type]||'🔔'}
       </div>
-      <div class="appel-btns">
-        ${isPend?`<button class="btn btn-gn" style="flex:1;justify-content:center;font-size:12px" onclick="acceptAppelPers('${a.id}')">✓ Prendre en charge</button>`:''}
-        ${isAcc?`<button class="btn btn-ac" style="flex:1;justify-content:center;font-size:12px" onclick="completeAppelPers('${a.id}')">✅ Terminé</button>`:''}
-        <button class="btn" style="font-size:11px;padding:6px 10px" onclick="cancelAppelPers('${a.id}')">✕ Annuler</button>
+      <div style="flex:1;min-width:0">
+        ${chipHtml}
+        <div style="font-size:14px;font-weight:800;margin-top:2px">🪑 ${a.table_nom}</div>
+        <div style="font-size:10px;color:var(--mt);margin-top:1px">⏰ ${new Date(a.created_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</div>
+      </div>
+      <div class="appel-timer" style="color:${timerCol};flex-shrink:0">⌛ ${ageStr}</div>
+    </div>
+    ${takenBanner}
+    ${msgHtml}
+    ${additionHtml}
+    ${btnsHtml}
+  </div>`;
+}
+
+// ── ACCEPTER un appel — SERVEUSE ASSIGNMENT ───────────────────
+async function acceptAppelPers(id) {
+  if (!CU) return;
+  const nomServeuse = CU.nom;
+
+  // SERVEUSE ASSIGNMENT — Marquer prise en charge avec nom + timestamp
+  try {
+    const { error } = await db.from('appels').update({
+      statut: 'accepted',
+      employe_id: CU.id,
+      prise_en_charge_par: nomServeuse,
+      prise_en_charge_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }).eq('id', id);
+
+    if (error) { toast('❌ Erreur : ' + error.message, 'var(--dg)'); return; }
+  } catch(e) {
+    // OFFLINE — mettre à jour le cache
+    const idx = _appelsCache.findIndex(a => a.id === id);
+    if (idx >= 0) {
+      _appelsCache[idx].statut = 'accepted';
+      _appelsCache[idx].prise_en_charge_par = nomServeuse;
+    }
+  }
+
+  toast('✓ Appel pris en charge', 'var(--gn)');
+
+  // Si c'est une addition → calculer automatiquement
+  const appel = _appelsCache.find(a => a.id === id);
+  if (appel && appel.type === 'addition') {
+    loadAndShowAddition(id, appel.table_nom);
+    return;
+  }
+
+  loadAppelsPers();
+}
+
+// ── REFUSER un appel ─────────────────────────────────────────
+async function rejectAppelPers(id) {
+  // TABLE CALL MANAGEMENT — Le refus remet l'appel disponible pour d'autres
+  try {
+    await db.from('appels').update({
+      statut: 'rejected',
+      updated_at: new Date().toISOString()
+    }).eq('id', id);
+    // Remettre en pending après 5s pour que d'autres puissent le prendre
+    setTimeout(async () => {
+      await db.from('appels').update({ statut: 'pending' }).eq('id', id).eq('statut', 'rejected');
+    }, 5000);
+  } catch(e) {
+    const idx = _appelsCache.findIndex(a => a.id === id);
+    if (idx >= 0) _appelsCache.splice(idx, 1);
+  }
+  toast('↩ Appel refusé — sera visible dans 5s', 'var(--wn)');
+  loadAppelsPers();
+}
+
+// ── TERMINER un appel ─────────────────────────────────────────
+async function completeAppelPers(id) {
+  // HISTORIQUE APPELS — Sauvegarder completed avec timestamp
+  try {
+    await db.from('appels').update({
+      statut: 'completed',
+      completed_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }).eq('id', id);
+  } catch(e) {
+    const idx = _appelsCache.findIndex(a => a.id === id);
+    if (idx >= 0) _appelsCache[idx].statut = 'completed';
+  }
+  toast('✅ Appel terminé !', 'var(--gn)');
+  loadAppelsPers();
+}
+
+// ── CALCULER et afficher addition — ADDITION REQUEST ─────────
+async function loadAndShowAddition(appelId, tableNom) {
+  toast('⏳ Calcul de l\'addition...', 'var(--inf)');
+
+  const det = await calcAdditionTable(tableNom);
+  if (!det) { toast('❌ Impossible de calculer', 'var(--dg)'); return; }
+
+  // Sauvegarder le détail dans l'appel — HISTORIQUE APPELS
+  try {
+    await db.from('appels').update({
+      addition_detail: JSON.stringify(det),
+      updated_at: new Date().toISOString()
+    }).eq('id', appelId);
+  } catch(e) {}
+
+  // Mettre à jour cache local
+  const idx = _appelsCache.findIndex(a => a.id === appelId);
+  if (idx >= 0) _appelsCache[idx].addition_detail = JSON.stringify(det);
+
+  // Afficher modal addition
+  showAdditionModal(tableNom, det, appelId);
+  loadAppelsPers();
+}
+
+// ── Modal addition — ADDITION REQUEST ────────────────────────
+function showAdditionModal(tableNom, det, appelId) {
+  const old = document.getElementById('addition-modal-overlay');
+  if (old) old.remove();
+
+  const ov = document.createElement('div');
+  ov.id = 'addition-modal-overlay';
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:8000;display:flex;align-items:center;justify-content:center;padding:20px';
+  ov.innerHTML = `
+    <div style="background:#0f0f18;border:1px solid rgba(255,255,255,.1);border-radius:20px;width:100%;max-width:340px;overflow:hidden">
+      <div style="background:linear-gradient(135deg,rgba(200,245,90,.1),rgba(0,0,0,0));padding:18px 18px 14px;border-bottom:1px solid rgba(255,255,255,.07)">
+        <div style="font-size:11px;color:var(--mt);text-transform:uppercase;letter-spacing:.1em">Demande d'addition</div>
+        <div style="font-size:22px;font-weight:800;margin-top:4px">🪑 ${tableNom}</div>
+      </div>
+      <div style="padding:14px 18px">
+        <div style="font-size:11px;color:var(--mt);margin-bottom:10px">${det.nbCommandes || ''} commande(s) non payée(s)</div>
+        <div class="addition-line" style="padding:6px 0"><span>🍺 Boissons</span><span style="color:var(--inf)">${fmt(det.totBoissons||0)} F</span></div>
+        <div class="addition-line" style="padding:6px 0"><span>🍽️ Cuisine</span><span style="color:var(--wn)">${fmt(det.totCuisine||0)} F</span></div>
+        <div class="addition-total" style="font-size:18px;margin-top:10px">
+          <span>💰 TOTAL</span>
+          <span style="color:var(--ac)">${fmt(det.total)} F</span>
+        </div>
+      </div>
+      <div style="display:flex;border-top:1px solid rgba(255,255,255,.07)">
+        <button onclick="showInvoiceFromAppel('${appelId}','${tableNom.replace(/'/g,"&#39;")}')" style="flex:2;padding:14px;background:rgba(200,245,90,.1);color:var(--ac);border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">🧾 Voir & Imprimer facture</button>
+        <button onclick="document.getElementById('addition-modal-overlay').remove()" style="flex:1;padding:14px;background:rgba(255,255,255,.04);color:var(--mt);border:none;font-size:12px;cursor:pointer;font-family:inherit;border-left:1px solid rgba(255,255,255,.07)">✕ Fermer</button>
+      </div>
+    </div>`;
+  ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
+  document.body.appendChild(ov);
+}
+
+// ── Voir facture depuis un appel — SERVEUSE VIEW ──────────────
+async function showInvoiceFromAppel(appelId, tableNom) {
+  // ADDITION REQUEST — Récupérer la dernière commande de la table
+  try {
+    const { data: cmds } = await db.from('commandes')
+      .select('*')
+      .eq('etab_id', ETAB.id)
+      .eq('table_nom', tableNom)
+      .eq('date_cmd', today())
+      .neq('statut', 'Annulé')
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    if (!cmds || !cmds.length) {
+      toast('❌ Aucune commande trouvée pour ' + tableNom, 'var(--dg)');
+      return;
+    }
+
+    // Utiliser le système de facture existant — ne pas casser impression
+    showReceipt(cmds[0]);
+    document.getElementById('addition-modal-overlay')?.remove();
+  } catch(e) {
+    toast('❌ Erreur chargement facture', 'var(--dg)');
+  }
+}
+
+// ── Stats manager appels — MODULE MANAGER ─────────────────────
+async function getAppelsMgrStats() {
+  if (!ETAB) return null;
+  try {
+    const today_str = today();
+    // Tous les appels du jour (y compris completed)
+    const { data: all } = await db.from('appels')
+      .select('*')
+      .eq('etab_id', ETAB.id)
+      .gte('created_at', today_str + 'T00:00:00');
+
+    const appels = all || [];
+    const enAttente  = appels.filter(a => a.statut === 'pending').length;
+    const acceptes   = appels.filter(a => ['accepted','completed'].includes(a.statut));
+    const ignored    = appels.filter(a => a.statut === 'rejected').length;
+    const total      = appels.length;
+
+    // Temps moyen de réponse (accepted → prise_en_charge_at - created_at)
+    const resTimes = acceptes
+      .filter(a => a.prise_en_charge_at && a.created_at)
+      .map(a => (new Date(a.prise_en_charge_at) - new Date(a.created_at)) / 1000);
+    const avgRes = resTimes.length
+      ? Math.round(resTimes.reduce((a, b) => a + b, 0) / resTimes.length)
+      : 0;
+
+    // Meilleure serveuse (qui a pris le plus d'appels)
+    const byServeuse = {};
+    acceptes.forEach(a => {
+      const n = a.prise_en_charge_par || '?';
+      byServeuse[n] = (byServeuse[n] || 0) + 1;
+    });
+    const bestServeuse = Object.entries(byServeuse).sort((a, b) => b[1] - a[1])[0];
+
+    return { enAttente, total, avgRes, ignored, bestServeuse, acceptesCount: acceptes.length };
+  } catch(e) {
+    return null;
+  }
+}
+
+// ── Bande stats rapide dans la vue appels (manager) ───────────
+async function renderAppelsMgrStrip(appels) {
+  const strip = document.getElementById('appels-mgr-strip');
+  if (!strip) return;
+  const pending = appels.filter(a => a.statut === 'pending').length;
+  const accepted = appels.filter(a => a.statut === 'accepted').length;
+  strip.innerHTML = `
+    <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:6px">
+      <div class="appels-stat-card" style="min-width:100px">
+        <div class="appels-stat-v" style="color:var(--dg)">${pending}</div>
+        <div class="appels-stat-l">🔴 En attente</div>
+      </div>
+      <div class="appels-stat-card" style="min-width:100px">
+        <div class="appels-stat-v" style="color:var(--wn)">${accepted}</div>
+        <div class="appels-stat-l">🟡 En cours</div>
+      </div>
+      <div class="appels-stat-card" style="min-width:100px">
+        <div class="appels-stat-v" style="color:var(--ac)">${appels.filter(a=>a.type==='addition').length}</div>
+        <div class="appels-stat-l">💰 Additions</div>
+      </div>
+      <div class="appels-stat-card" style="min-width:100px">
+        <div class="appels-stat-v" style="color:var(--dg)">${appels.filter(a=>a.type==='urgence').length}</div>
+        <div class="appels-stat-l">🚨 Urgences</div>
+      </div>
+    </div>`;
+}
+
+// ── Injection stats appels dans vue Direction/Chef — MODULE MANAGER ──
+async function injectAppelsMgrStats() {
+  const stats = await getAppelsMgrStats();
+  if (!stats) return;
+
+  const mins = Math.floor(stats.avgRes / 60);
+  const secs = stats.avgRes % 60;
+  const avgResStr = stats.avgRes > 0 ? (mins > 0 ? mins + 'min' : secs + 's') : '—';
+
+  const html = `
+    <div id="appels-dir-section" style="margin-top:14px">
+      <div class="sec-lbl" style="margin-bottom:8px">📞 Appels clients — Aujourd'hui</div>
+      <div class="appels-stats-row">
+        <div class="appels-stat-card"><div class="appels-stat-v" style="color:var(--dg)">${stats.enAttente}</div><div class="appels-stat-l">🔴 En attente</div></div>
+        <div class="appels-stat-card"><div class="appels-stat-v" style="color:var(--ac)">${stats.total}</div><div class="appels-stat-l">📊 Total appels</div></div>
+        <div class="appels-stat-card"><div class="appels-stat-v" style="color:var(--inf)">${avgResStr}</div><div class="appels-stat-l">⏱ Temps moyen</div></div>
+        <div class="appels-stat-card"><div class="appels-stat-v" style="color:var(--wn)">${stats.ignored}</div><div class="appels-stat-l">↩ Refusés</div></div>
+      </div>
+      ${stats.bestServeuse ? `<div style="background:rgba(200,245,90,.07);border:1px solid rgba(200,245,90,.2);border-radius:var(--rs);padding:10px 12px;font-size:12px">
+        🏆 Meilleure réponse : <strong style="color:var(--ac)">${stats.bestServeuse[0]}</strong>
+        <span style="color:var(--mt)"> · ${stats.bestServeuse[1]} appel(s) traité(s)</span>
+      </div>` : ''}
+    </div>`;
+
+  // Injecter dans view-direction
+  const dirView = document.getElementById('view-direction');
+  if (dirView) {
+    const existing = dirView.querySelector('#appels-dir-section');
+    if (existing) existing.remove();
+    const scroll = dirView.querySelector('.scroll');
+    if (scroll) scroll.insertAdjacentHTML('beforeend', html);
+  }
+  // Injecter dans view-equipe si chef
+  const equipeView = document.getElementById('view-equipe');
+  if (equipeView) {
+    const existing2 = equipeView.querySelector('#appels-dir-section');
+    if (existing2) existing2.remove();
+    const scroll2 = equipeView.querySelector('.scroll');
+    if (scroll2) scroll2.insertAdjacentHTML('beforeend', html.replace('id="appels-dir-section"', 'id="appels-dir-section"'));
+  }
+}
+
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MULTI-RÔLES v4.0 — Module indépendant
+     Ajouté progressivement. N'écrase aucune logique existante.
+     © 2025 Christophe OLOCK BELANG
+═══════════════════════════════════════════════════════════════ -->
+<script>
+
+// ══════════════════════════════════════════════════════════════
+// 1. MAPPING RÔLES → CLÉS INTERNES
+// ══════════════════════════════════════════════════════════════
+const ROLE_MAP={
+  'Serveuse':'serveuse','Serveur':'serveuse','Hôtesse':'serveuse',
+  'Barman':'barman','Barmaid':'barman','Manager':'barman',
+  'Cuisinier':'cuisine','Cuisinière':'cuisine','Cuisine':'cuisine','Cuistot':'cuisine',
+  'Vigile':'vigile','Sécurité':'vigile','Agent de sécurité':'vigile','Agent':'vigile',
+  "Chef d'équipe":'chef','Chef':'chef','Superviseur':'chef','Responsable':'chef',
+  'Directeur':'directeur','Directrice':'directeur','Direction':'directeur','PDG':'directeur','DG':'directeur',
+};
+function getRoleKey(){return ROLE_MAP[CU?.role]||'serveuse';}
+
+// ══════════════════════════════════════════════════════════════
+// 2. CONFIGURATION DES RÔLES
+// ══════════════════════════════════════════════════════════════
+const ROLE_CONFIG={
+  serveuse:{
+    color:'#7c6cff',
+    tabs:[
+      {id:'commande',  ic:'🧾',lbl:'Commander'},
+      {id:'historique',ic:'📊',lbl:'Mes ventes'},
+      {id:'badges',    ic:'🏅',lbl:'Badges'},
+      {id:'appels',    ic:'🔔',lbl:'Appels'},
+    ],
+    onStart:()=>{/* canaux existants suffisent */}
+  },
+  barman:{
+    color:'#ffb444',
+    tabs:[
+      {id:'barman',    ic:'🍺',lbl:'Bar'},
+      {id:'historique',ic:'📊',lbl:'Stats'},
+      {id:'appels',    ic:'🔔',lbl:'Appels'},
+    ],
+    onStart:()=>{/* canaux existants suffisent */}
+  },
+  cuisine:{
+    color:'#f97316',
+    tabs:[
+      {id:'cuisine',   ic:'👨‍🍳',lbl:'Cuisine'},
+    ],
+    onStart:startRealtimeCuisine
+  },
+  vigile:{
+    color:'#5ab4ff',
+    tabs:[
+      {id:'securite',   ic:'🛡️',lbl:'Surveillance'},
+      {id:'scans',      ic:'📡',lbl:'Scans'},
+      {id:'alertes-vig',ic:'⚠️',lbl:'Alertes'},
+    ],
+    onStart:startVigileModule
+  },
+  chef:{
+    color:'#4ade80',
+    tabs:[
+      {id:'equipe',    ic:'👥',lbl:'Équipe'},
+      {id:'cmd-all',   ic:'📊',lbl:'Commandes'},
+      {id:'appels',    ic:'🔔',lbl:'Appels'},
+    ],
+    onStart:startChefModule
+  },
+  directeur:{
+    color:'#c8f55a',
+    tabs:[
+      {id:'direction', ic:'📈',lbl:'Dashboard'},
+      {id:'equipe',    ic:'👥',lbl:'Équipe'},
+      {id:'cmd-all',   ic:'📦',lbl:'Ventes'},
+      {id:'appels',    ic:'🔔',lbl:'Appels'},
+    ],
+    onStart:startDirecteurModule
+  },
+};
+
+// ══════════════════════════════════════════════════════════════
+// 3. MODULE CUISINE
+// ══════════════════════════════════════════════════════════════
+let _curCuisTab='att';
+let _cuisTimer=null;
+
+function showCuisTab(tab){
+  _curCuisTab=tab;
+  ['att','pret','hist'].forEach(t=>{
+    document.getElementById('cuisview-'+t)?.classList.toggle('hide',t!==tab);
+    const btn=document.getElementById('ctab-'+t);
+    if(btn){
+      btn.style.color=t===tab?'var(--ac)':'var(--mt)';
+      btn.style.borderBottom=t===tab?'2px solid var(--ac)':'2px solid transparent';
+    }
+  });
+  if(tab==='att'||tab==='pret') loadCuisine();
+  else loadHistCuisine();
+}
+
+async function loadCuisine(){
+  clearTimeout(_cuisTimer);
+  const isPret=_curCuisTab==='pret';
+  const statuts=isPret?['Livré']:['Nouveau','En prépa'];
+  const {data:cmds}=await db.from('commandes')
+    .select('*').eq('etab_id',ETAB.id)
+    .in('statut',statuts).eq('date_cmd',today())
+    .order('created_at',{ascending:true});
+  const list=cmds||[];
+
+  const badge=document.getElementById('cuis-badge-att');
+  if(badge) badge.textContent=(!isPret&&list.length>0)?list.length:'';
+
+  const containerId=isPret?'cuisine-pret-list':'cuisine-list';
+  const el=document.getElementById(containerId);
+  if(!el) return;
+
+  if(!list.length){
+    el.innerHTML=`<div class="empty" style="padding:40px 20px">${isPret?'✅ Aucun plat terminé':'✅ Aucune commande en cuisine'}</div>`;
+    if(!isPret) _cuisTimer=setTimeout(loadCuisine,20000);
+    return;
+  }
+
+  el.innerHTML=list.map(c=>{
+    const now=Date.now();
+    const since=Math.round((now-new Date(c.created_at).getTime())/60000);
+    const isNouv=c.statut==='Nouveau';
+    const isPrep=c.statut==='En prépa';
+    const urgency=since>15?'var(--dg)':since>8?'var(--wn)':'var(--mt)';
+    return `
+    <div class="cuisine-card ${isNouv?'nouveau':isPrep?'en-prepa':''}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div>
+          <div style="font-size:16px;font-weight:800">${c.table_nom}</div>
+          <div style="font-size:11px;color:var(--mt);margin-top:2px">${c.employe_nom||'?'} · ${c.heure||'—'}</div>
+        </div>
+        <div style="text-align:right">
+          <span class="cuisine-badge" style="color:${isNouv?'var(--inf)':isPrep?'var(--wn)':'var(--gn)'}">${c.statut}</span>
+          <div style="font-size:11px;font-weight:700;color:${urgency};margin-top:4px">⏱ ${since} min</div>
+        </div>
+      </div>
+      <div style="font-size:15px;line-height:2;margin-bottom:12px">
+        ${(c.articles_cuisine||c.articles||'').split(',').map(a=>a.trim()?`🔸 ${a.trim()}`:'').filter(Boolean).join('<br>')}
+      </div>
+      <div style="display:flex;gap:7px">
+        ${isNouv?`<button class="bar-btn bar-prep" style="flex:1;font-size:13px" onclick="updCuisine('${c.id}','En prépa')">🔥 En cuisine</button>`:''}
+        ${isPrep?`<button class="bar-btn bar-done" style="flex:1;font-size:13px" onclick="updCuisine('${c.id}','Livré')">✅ Prêt !</button>`:''}
+        <button class="bar-btn bar-reject" style="font-size:12px;padding:8px 12px" onclick="updCuisine('${c.id}','Annulé')">✕</button>
       </div>
     </div>`;
   }).join('');
 
-  // Rafraîchir les timers toutes les 10 secondes
-  _appelsTimer = setTimeout(loadAppelsPers, 10000);
+  if(!isPret) _cuisTimer=setTimeout(loadCuisine,20000);
 }
 
-async function acceptAppelPers(id) {
-  await db.from('appels').update({
-    statut: 'accepted',
-    employe_id: CU?.id,
-    updated_at: new Date().toISOString()
-  }).eq('id', id);
-  loadAppelsPers();
+async function updCuisine(id,statut){
+  await db.from('commandes').update({statut,updated_at:new Date().toISOString()}).eq('id',id);
+  const m={'En prépa':['🔥 En préparation !','var(--wn)'],'Livré':['✅ Plat prêt !','var(--gn)'],'Annulé':['✕ Annulé','var(--dg)']};
+  const [msg,col]=m[statut]||['OK','var(--mt)'];
+  toast(msg,col);
+  loadCuisine();
 }
 
-async function completeAppelPers(id) {
-  await db.from('appels').update({
-    statut: 'completed',
-    updated_at: new Date().toISOString()
-  }).eq('id', id);
-  loadAppelsPers();
+async function loadHistCuisine(){
+  const {data:cmds}=await db.from('commandes')
+    .select('*').eq('etab_id',ETAB.id).eq('date_cmd',today())
+    .order('created_at',{ascending:false});
+  const all=cmds||[];
+  const livrees=all.filter(c=>c.statut==='Livré');
+  const annulees=all.filter(c=>c.statut==='Annulé');
+  const enCours=all.filter(c=>['Nouveau','En prépa'].includes(c.statut));
+  const tempsTotal=livrees.reduce((a,c)=>{
+    const d=(new Date(c.updated_at||c.created_at)-new Date(c.created_at))/60000;
+    return a+Math.max(0,d);
+  },0);
+  const tempsMoyen=livrees.length?Math.round(tempsTotal/livrees.length):0;
+
+  document.getElementById('cuis-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-v" style="color:var(--gn)">${livrees.length}</div><div class="stat-l">✅ Plats servis</div></div>
+    <div class="stat-card"><div class="stat-v" style="color:var(--wn)">${enCours.length}</div><div class="stat-l">🔥 En cours</div></div>
+    <div class="stat-card"><div class="stat-v" style="color:var(--dg)">${annulees.length}</div><div class="stat-l">✕ Annulés</div></div>
+    <div class="stat-card"><div class="stat-v" style="color:var(--inf)">${tempsMoyen} min</div><div class="stat-l">⏱ Temps moyen</div></div>`;
+
+  document.getElementById('cuis-hist-list').innerHTML=all.length
+    ?all.map(c=>`
+      <div class="hist-item">
+        <div class="hist-top">
+          <div class="hist-tbl">${c.table_nom}</div>
+          <div class="hist-time">${c.heure||''}</div>
+        </div>
+        <div class="hist-items">${c.articles||''}</div>
+        <div class="hist-bot">
+          <div style="font-size:11px;color:var(--mt)">${c.employe_nom||'?'}</div>
+          <span class="pill ${c.statut==='Livré'?'p-d':c.statut==='Nouveau'?'p-n':c.statut==='En prépa'?'p-p':'p-c'}">${c.statut}</span>
+        </div>
+      </div>`).join('')
+    :'<div class="empty">Aucune commande aujourd\'hui</div>';
 }
 
-async function cancelAppelPers(id) {
-  await db.from('appels').update({
-    statut: 'cancelled',
-    updated_at: new Date().toISOString()
-  }).eq('id', id);
-  loadAppelsPers();
+
+// Patch loadHistCuisine pour ajouter inventaire cuisine
+const _origLoadHistCuisine = loadHistCuisine;
+loadHistCuisine = async function() {
+  await _origLoadHistCuisine();
+  // CUISINE INVENTORY — Ajouter inventaire cuisine après stats
+  await loadStockCache();
+  const histEl = document.getElementById('cuisview-hist');
+  if (histEl) {
+    const existing = histEl.querySelector('#cuis-stock-section');
+    if (existing) existing.remove();
+    const stockHTML = buildCuisineStockSection();
+    if (stockHTML) {
+      const div = document.createElement('div');
+      div.id = 'cuis-stock-section';
+      div.innerHTML = stockHTML;
+      histEl.appendChild(div);
+    }
+  }
+};
+
+function startRealtimeCuisine(){
+  db.channel('cuisine-rt-'+ETAB.id)
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'commandes',filter:`etab_id=eq.${ETAB.id}`},
+      payload=>{
+        const nr=payload.new||{};
+        if(nr.statut==='Nouveau'){playBeepBarman();toast('👨‍🍳 Nouvelle commande — '+nr.table_nom,'var(--wn)');}
+        const cv=document.querySelector('#view-cuisine:not(.hide)');
+        if(cv) loadCuisine();
+      })
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'commandes',filter:`etab_id=eq.${ETAB.id}`},
+      ()=>{const cv=document.querySelector('#view-cuisine:not(.hide)');if(cv) loadCuisine();})
+    .subscribe();
+}
+
+// ══════════════════════════════════════════════════════════════
+// 4. MODULE VIGILE
+// ══════════════════════════════════════════════════════════════
+let vigScanFilter='all';
+let _vigTimer=null;
+
+function setVigFilter(f,el){
+  vigScanFilter=f;
+  document.querySelectorAll('.vig-filter-bar .mf-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  loadScans(f);
+}
+
+async function loadSecurite(){
+  clearTimeout(_vigTimer);
+  const total=EMPS.length;
+
+  // Tentative de chargement des pointages (table optionnelle)
+  let pointages=[];
+  try{
+    const {data,error}=await db.from('pointages')
+      .select('*').eq('etab_id',ETAB.id).eq('date_p',today());
+    if(!error) pointages=data||[];
+  }catch(e){}
+
+  const presentsIds=[...new Set(pointages.filter(p=>p.type==='entree').map(p=>p.employe_id))];
+  const sortisIds=[...new Set(pointages.filter(p=>p.type==='sortie').map(p=>p.employe_id))];
+  const retards=pointages.filter(p=>p.statut==='retard');
+  const suspects=pointages.filter(p=>p.is_valid===false||p.statut==='suspect');
+
+  document.getElementById('vig-stats-grid').innerHTML=`
+    <div class="vig-stat"><div class="vig-stat-v" style="color:var(--gn)">${presentsIds.length}</div><div class="vig-stat-l">✅ Présents</div></div>
+    <div class="vig-stat"><div class="vig-stat-v" style="color:var(--mt)">${Math.max(0,total-presentsIds.length)}</div><div class="vig-stat-l">❌ Absents</div></div>
+    <div class="vig-stat"><div class="vig-stat-v" style="color:var(--wn)">${retards.length}</div><div class="vig-stat-l">⏰ Retards</div></div>
+    <div class="vig-stat"><div class="vig-stat-v" style="color:var(--dg)">${suspects.length}</div><div class="vig-stat-l">⚠️ Incidents</div></div>`;
+
+  const el=document.getElementById('vig-emp-list');
+  if(!el) return;
+
+  if(!EMPS.length){
+    el.innerHTML='<div class="empty">Aucun employé configuré</div>';
+    _vigTimer=setTimeout(loadSecurite,30000);
+    return;
+  }
+
+  el.innerHTML=EMPS.map((e,i)=>{
+    const col=COLORS[i%COLORS.length];
+    const empP=pointages.filter(p=>p.employe_id===e.id);
+    const entree=empP.filter(p=>p.type==='entree').sort((a,b)=>a.heure>b.heure?1:-1)[0];
+    const sortie=empP.filter(p=>p.type==='sortie').sort((a,b)=>a.heure>b.heure?-1:1)[0];
+    const isPresent=presentsIds.includes(e.id);
+    const isSorti=sortisIds.includes(e.id);
+    const pRec=empP[0];
+    const statut=!isPresent?'absent':pRec?.is_valid===false||pRec?.statut==='suspect'?'suspect':pRec?.statut==='retard'?'retard':'ponctuel';
+    const statusMap={
+      ponctuel:{cls:'ss-ok',lbl:'✓ Ponctuel'},
+      retard:{cls:'ss-late',lbl:`⏰ Retard ${pRec?.retard_min||'?'} min`},
+      absent:{cls:'ss-absent',lbl:'❌ Absent'},
+      suspect:{cls:'ss-suspect',lbl:'⚠️ Suspect'},
+    };
+    const sc=statusMap[statut]||statusMap.absent;
+    return `
+    <div class="vig-emp-row ${statut==='absent'?'absent':statut==='suspect'?'suspect':statut==='retard'?'retard':''}">
+      <div class="scan-av" style="background:${col}22;color:${col}">${ini(e.nom)}</div>
+      <div style="flex:1;min-width:0">
+        <div class="scan-nom">${e.nom}</div>
+        <div class="scan-role">${e.role}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:11px;margin-bottom:3px">
+          ${entree?`<span style="color:var(--gn)">→ ${entree.heure||'—'}</span>`:'<span style="color:var(--mt)">→ —</span>'}
+          ${sortie?` <span style="color:var(--dg);margin-left:4px">← ${sortie.heure||'—'}</span>`:''}
+        </div>
+        <span class="scan-status ${sc.cls}">${sc.lbl}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  _vigTimer=setTimeout(loadSecurite,30000);
+}
+
+async function loadScans(filter='all'){
+  vigScanFilter=filter;
+  const el=document.getElementById('scans-list');
+  if(!el) return;
+
+  let scans=[];
+  try{
+    let q=db.from('pointages').select('*').eq('etab_id',ETAB.id).eq('date_p',today());
+    if(filter==='entree') q=q.eq('type','entree');
+    else if(filter==='sortie') q=q.eq('type','sortie');
+    else if(filter==='retard') q=q.eq('statut','retard');
+    else if(filter==='suspect') q=q.or('is_valid.eq.false,statut.eq.suspect');
+    q=q.order('heure',{ascending:false});
+    const {data,error}=await q;
+    if(!error) scans=data||[];
+  }catch(e){}
+
+  if(!scans.length){
+    el.innerHTML=`<div class="empty" style="padding:50px 20px;font-size:14px">${
+      filter==='suspect'?'✅ Aucun incident détecté':
+      filter==='retard'?'✅ Aucun retard':
+      '📡 Aucun scan enregistré'
+    }</div>`;
+    return;
+  }
+
+  el.innerHTML=scans.map(s=>{
+    const emp=EMPS.find(e=>e.id===s.employe_id);
+    const col=emp?COLORS[EMPS.indexOf(emp)%COLORS.length]:'#7c6cff';
+    const isEntree=s.type==='entree';
+    const isInvalid=s.is_valid===false||s.statut==='suspect';
+    const isRetard=s.statut==='retard';
+    const stCls=isInvalid?'ss-suspect':isRetard?'ss-late':'ss-ok';
+    const stLbl=isInvalid?'⚠️ Suspect':isRetard?`⏰ +${s.retard_min||'?'} min`:'✓ OK';
+    return `
+    <div class="scan-row">
+      <div class="scan-type-ic" style="background:${isEntree?'rgba(74,222,128,.12)':'rgba(255,94,94,.1)'}">
+        <span style="color:${isEntree?'var(--gn)':'var(--dg)'}">${isEntree?'→':'←'}</span>
+      </div>
+      <div class="scan-av" style="background:${col}22;color:${col}">${ini(s.employe_nom||'??')}</div>
+      <div class="scan-info">
+        <div class="scan-nom">${s.employe_nom||'Inconnu'}</div>
+        <div class="scan-role">${s.employe_role||emp?.role||'—'} · ${isEntree?'Entrée':'Sortie'}</div>
+        <span class="scan-status ${stCls}">${stLbl}</span>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:15px;font-weight:800">${s.heure||'—'}</div>
+        <div style="font-size:10px;color:var(--mt)">${s.date_p||today()}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function loadAlertesVig(){
+  const el=document.getElementById('alertes-vig-list');
+  if(!el) return;
+  let alertes=[];
+  try{
+    const {data}=await db.from('alertes')
+      .select('*').eq('etab_id',ETAB.id).eq('date_alerte',today())
+      .order('created_at',{ascending:false}).limit(60);
+    alertes=data||[];
+  }catch(e){}
+
+  if(!alertes.length){
+    el.innerHTML='<div class="empty" style="padding:50px 20px;font-size:14px">✅ Aucune alerte aujourd\'hui</div>';
+    return;
+  }
+  el.innerHTML=alertes.map(a=>`
+    <div class="alert-vig ${a.type==='critical'?'critical':a.type==='warning'?'warning':'info'}">
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <span style="font-size:22px;flex-shrink:0">${a.icone||'⚠️'}</span>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700">${a.titre||''}</div>
+          <div style="font-size:11px;color:var(--mt);margin-top:3px;line-height:1.5">${a.message||''}</div>
+          <div style="font-size:10px;color:var(--mt);margin-top:5px">🕐 ${a.heure||''} · ${a.date_alerte||''}</div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function startVigileModule(){
+  loadSecurite();
+  db.channel('vigile-points-'+ETAB.id)
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'pointages',filter:`etab_id=eq.${ETAB.id}`},
+      payload=>{
+        const s=payload.new||{};
+        const isInvalid=s.is_valid===false||s.statut==='suspect';
+        if(isInvalid){playBeepBarman();toast('⚠️ Scan suspect — '+(s.employe_nom||'Inconnu'),'var(--dg)');}
+        else toast(`${s.type==='entree'?'→':'←'} Scan — ${s.employe_nom||'?'}`,s.type==='entree'?'var(--gn)':'var(--mt)');
+        const cv=document.querySelector('#view-securite:not(.hide)');if(cv) loadSecurite();
+        const cv2=document.querySelector('#view-scans:not(.hide)');if(cv2) loadScans(vigScanFilter);
+      })
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'alertes',filter:`etab_id=eq.${ETAB.id}`},
+      payload=>{
+        const a=payload.new||{};
+        if(a.type==='critical'){playBeepBarman();toast('🚨 '+a.titre,'var(--dg)');}
+        else if(a.type==='warning') toast('⚠️ '+a.titre,'var(--wn)');
+        const cv=document.querySelector('#view-alertes-vig:not(.hide)');if(cv) loadAlertesVig();
+      })
+    .subscribe();
+}
+
+// ══════════════════════════════════════════════════════════════
+// 5. EXPORT PDF VIGILE
+// ══════════════════════════════════════════════════════════════
+async function exportPDF_vigile(period='jour'){
+  if(!window.jspdf?.jsPDF){toast('jsPDF non disponible','var(--dg)');return;}
+  toast('📄 Génération PDF…','var(--inf)');
+
+  // Calcul période
+  const dateDebut=new Date();
+  if(period==='semaine') dateDebut.setDate(dateDebut.getDate()-7);
+  else if(period==='mois') dateDebut.setDate(dateDebut.getDate()-30);
+  const dateDebutStr=period==='jour'?today():dateDebut.toISOString().slice(0,10);
+  const periodLabel={'jour':'Journalier','semaine':'Hebdomadaire','mois':'Mensuel'}[period];
+
+  // Chargement données
+  let pointages=[];
+  try{
+    let q=db.from('pointages').select('*').eq('etab_id',ETAB.id);
+    if(period==='jour') q=q.eq('date_p',today());
+    else q=q.gte('date_p',dateDebutStr);
+    const {data}=await q.order('date_p',{ascending:true}).order('heure',{ascending:true});
+    pointages=data||[];
+  }catch(e){}
+
+  let alertes=[];
+  try{
+    let q2=db.from('alertes').select('*').eq('etab_id',ETAB.id);
+    if(period==='jour') q2=q2.eq('date_alerte',today());
+    else q2=q2.gte('date_alerte',dateDebutStr);
+    const {data:da}=await q2.order('created_at',{ascending:false}).limit(30);
+    alertes=da||[];
+  }catch(e){}
+
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const W=210,ml=14,mr=14,cw=W-ml-mr;
+  let y=0;
+
+  // ── Fond header
+  doc.setFillColor(10,10,15);
+  doc.rect(0,0,W,38,'F');
+
+  // Logo BarOS
+  doc.setTextColor(200,245,90);
+  doc.setFontSize(24);doc.setFont('helvetica','bold');
+  doc.text('BarOS',ml,20);
+  doc.setFontSize(9);doc.setTextColor(160,155,200);
+  doc.text('Rapport de Sécurité · '+periodLabel,ml,28);
+  doc.text(new Date().toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'}),ml,34);
+  doc.setTextColor(120,120,150);
+  doc.text((ETAB.nom||'').slice(0,30),W-mr,22,'right');
+  doc.text('Vigile : '+CU.nom,W-mr,28,'right');
+  doc.text('Période : '+(period==='jour'?today():dateDebutStr+' → '+today()),W-mr,34,'right');
+
+  y=46;
+
+  // ── Ligne déco
+  doc.setDrawColor(200,245,90);doc.setLineWidth(.3);
+  doc.line(ml,y,W-mr,y);y+=8;
+
+  // ── Stats résumé
+  const presentsSet=new Set(pointages.filter(p=>p.type==='entree').map(p=>p.employe_id));
+  const nbPresents=presentsSet.size;
+  const nbAbsents=Math.max(0,EMPS.length-nbPresents);
+  const nbRetards=pointages.filter(p=>p.statut==='retard').length;
+  const nbSuspects=pointages.filter(p=>p.is_valid===false||p.statut==='suspect').length;
+  const nbScans=pointages.length;
+
+  doc.setFillColor(240,242,248);doc.roundedRect(ml,y,cw,16,2,2,'F');
+  doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(80,80,100);
+  const stats=[
+    ['Scans totaux',nbScans],['Présents',nbPresents],['Absents',nbAbsents],
+    ['Retards',nbRetards],['Incidents',nbSuspects],['Employés',EMPS.length]
+  ];
+  stats.forEach(([lbl,val],i)=>{
+    const x=ml+5+(i*(cw/6));
+    doc.setFont('helvetica','bold');doc.setTextColor(30,30,50);doc.setFontSize(10);
+    doc.text(String(val),x,y+7);
+    doc.setFont('helvetica','normal');doc.setTextColor(100,100,130);doc.setFontSize(7);
+    doc.text(lbl,x,y+12);
+  });
+  y+=24;
+
+  // ── Tableau des mouvements
+  doc.setFontSize(11);doc.setFont('helvetica','bold');doc.setTextColor(20,20,40);
+  doc.text('Mouvements enregistrés',ml,y);y+=7;
+
+  const colsDefs=[
+    {lbl:'Nom',x:ml,w:42},
+    {lbl:'Poste',x:ml+42,w:28},
+    {lbl:'Type',x:ml+70,w:18},
+    {lbl:'Heure',x:ml+88,w:18},
+    {lbl:'Date',x:ml+106,w:22},
+    {lbl:'Statut',x:ml+128,w:28},
+    {lbl:'Note',x:ml+156,w:cw-(156)},
+  ];
+
+  // En-tête tableau
+  doc.setFillColor(15,15,25);doc.rect(ml,y,cw,7,'F');
+  doc.setTextColor(200,245,90);doc.setFontSize(7.5);doc.setFont('helvetica','bold');
+  colsDefs.forEach(c=>doc.text(c.lbl,c.x+1,y+5));
+  y+=9;
+
+  doc.setFont('helvetica','normal');doc.setFontSize(7.5);
+  let ri=0;
+  for(const s of pointages){
+    if(y>265){doc.addPage();y=20;}
+    const isInv=s.is_valid===false||s.statut==='suspect';
+    const isRet=s.statut==='retard';
+    if(ri%2===0){doc.setFillColor(248,249,252);doc.rect(ml,y,cw,6,'F');}
+    doc.setTextColor(isInv?180:40,isInv?30:40,isInv?30:60);
+    doc.text((s.employe_nom||'—').slice(0,20),ml+1,y+4);
+    doc.setTextColor(70,70,90);
+    doc.text((s.employe_role||'—').slice(0,13),ml+43,y+4);
+    doc.setTextColor(s.type==='entree'?20:180,s.type==='entree'?140:30,s.type==='entree'?30:30);
+    doc.text(s.type==='entree'?'→ Entrée':'← Sortie',ml+71,y+4);
+    doc.setTextColor(40,40,60);
+    doc.text(s.heure||'—',ml+89,y+4);
+    doc.text(s.date_p||'—',ml+107,y+4);
+    doc.setTextColor(isInv?180:isRet?160:50,isInv?30:isRet?120:130,isInv?30:0);
+    doc.text(isInv?'⚠ Suspect':isRet?`+${s.retard_min||'?'} min`:'OK',ml+129,y+4);
+    doc.setTextColor(90,90,110);
+    doc.text((s.qr_data||'').slice(0,14),ml+157,y+4);
+    y+=6.5;ri++;
+  }
+
+  if(!pointages.length){
+    doc.setTextColor(120,120,140);doc.setFontSize(10);
+    doc.text('Aucun scan enregistré pour cette période.',ml,y+6);y+=14;
+  }
+
+  // ── Section incidents
+  const incidents=pointages.filter(p=>p.is_valid===false||p.statut==='suspect');
+  if(incidents.length){
+    if(y>240){doc.addPage();y=20;}
+    y+=6;doc.setLineWidth(.2);doc.setDrawColor(220,50,50);doc.line(ml,y,W-mr,y);y+=7;
+    doc.setFontSize(10);doc.setFont('helvetica','bold');doc.setTextColor(180,40,40);
+    doc.text(`⚠  Incidents de sécurité (${incidents.length})`,ml,y);y+=7;
+    doc.setFont('helvetica','normal');doc.setFontSize(8);
+    incidents.forEach(s=>{
+      if(y>268){doc.addPage();y=20;}
+      doc.setTextColor(100,30,30);
+      doc.text(`•  ${(s.employe_nom||'Inconnu').slice(0,25)}  ·  ${s.date_p||''}  ${s.heure||''}  ·  ${s.type}  ·  Code: ${(s.qr_data||'—').slice(0,25)}`,ml+2,y);
+      y+=5.5;
+    });
+  }
+
+  // ── Alertes système
+  if(alertes.length){
+    if(y>230){doc.addPage();y=20;}
+    y+=6;doc.setLineWidth(.2);doc.setDrawColor(200,130,0);doc.line(ml,y,W-mr,y);y+=7;
+    doc.setFontSize(10);doc.setFont('helvetica','bold');doc.setTextColor(140,90,0);
+    doc.text(`Alertes système (${alertes.length})`,ml,y);y+=7;
+    doc.setFont('helvetica','normal');doc.setFontSize(7.5);
+    alertes.slice(0,15).forEach(a=>{
+      if(y>268){doc.addPage();y=20;}
+      doc.setTextColor(a.type==='critical'?160:80, a.type==='critical'?30:70, 20);
+      doc.text(`•  [${(a.type||'').toUpperCase()}]  ${(a.titre||'').slice(0,40)}  ·  ${a.heure||''}`,ml+2,y);
+      y+=5.5;
+    });
+  }
+
+  // ── Zone signatures
+  const sigY=Math.max(y+18,262);
+  if(sigY<=275){
+    doc.setDrawColor(180,180,200);doc.setLineWidth(.3);
+    doc.line(ml,sigY,ml+55,sigY);doc.line(W-mr-55,sigY,W-mr,sigY);
+    doc.setFontSize(7.5);doc.setTextColor(130,130,160);
+    doc.text('Signature du Vigile',ml,sigY+5);
+    doc.text('Signature du Responsable',W-mr-55,sigY+5);
+  }
+
+  // ── Pied de page
+  const nbPages=doc.internal.getNumberOfPages();
+  for(let i=1;i<=nbPages;i++){
+    doc.setPage(i);
+    doc.setFontSize(7);doc.setTextColor(150,150,170);
+    doc.text(`BarOS © 2025 Christophe OLOCK BELANG  ·  Rapport ${periodLabel}  ·  Page ${i}/${nbPages}`,W/2,290,'center');
+  }
+
+  doc.save(`BarOS_Securite_${periodLabel}_${today()}.pdf`);
+  toast('📄 PDF exporté !','var(--gn)');
+}
+
+// ══════════════════════════════════════════════════════════════
+// 6. MODULE CHEF D'ÉQUIPE
+// ══════════════════════════════════════════════════════════════
+async function loadEquipe(){
+  const {data:cmds}=await db.from('commandes')
+    .select('employe_id,employe_nom,montant,statut')
+    .eq('etab_id',ETAB.id).eq('date_cmd',today()).eq('statut','Livré');
+  const all=cmds||[];
+  const totalCA=all.reduce((a,c)=>a+c.montant,0);
+
+  // Calcul par employé
+  const byEmp={};
+  all.forEach(c=>{
+    if(!byEmp[c.employe_id]) byEmp[c.employe_id]={nom:c.employe_nom,ca:0,cmds:0};
+    byEmp[c.employe_id].ca+=c.montant;
+    byEmp[c.employe_id].cmds++;
+  });
+  const nbActifs=Object.keys(byEmp).length;
+
+  document.getElementById('equipe-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-v">${EMPS.length}</div><div class="stat-l">👥 Employés total</div></div>
+    <div class="stat-card"><div class="stat-v" style="color:var(--gn)">${nbActifs}</div><div class="stat-l">✅ Actifs ce soir</div></div>
+    <div class="stat-card"><div class="stat-v" style="color:var(--ac)">${fmt(totalCA)} F</div><div class="stat-l">💵 CA équipe</div></div>
+    <div class="stat-card"><div class="stat-v" style="color:var(--inf)">${all.length}</div><div class="stat-l">📦 Commandes</div></div>`;
+
+  const sorted=EMPS.map((e,i)=>({
+    ...e,col:COLORS[i%COLORS.length],
+    ...({ca:0,cmds:0,...(byEmp[e.id]||{})})
+  })).sort((a,b)=>b.ca-a.ca);
+
+  document.getElementById('equipe-list').innerHTML=sorted.map((e,i)=>`
+    <div class="team-card">
+      <div class="team-rank">${i+1}</div>
+      <div class="team-av" style="background:${e.col}22;color:${e.col}">${ini(e.nom)}</div>
+      <div class="team-info">
+        <div class="team-nom">${e.nom}</div>
+        <div class="team-role" style="display:flex;align-items:center;gap:6px">${e.role}
+          ${e.qr_code?`<span style="cursor:pointer;font-size:11px;padding:1px 6px;border-radius:6px;background:rgba(200,245,90,.1);border:1px solid rgba(200,245,90,.2);color:var(--ac)" onclick="voirQREmp('${e.id}')">🏷 QR</span>`:''}
+        </div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:15px;font-weight:800;color:var(--ac)">${fmt(e.ca)} F</div>
+        <div style="font-size:10px;color:var(--mt);margin-top:2px">${e.cmds} commande${e.cmds!==1?'s':''}</div>
+      </div>
+    </div>`).join('')||'<div class="empty">Aucune vente enregistrée</div>';
+}
+
+async function loadCmdAll(){
+  const {data:cmds}=await db.from('commandes')
+    .select('*').eq('etab_id',ETAB.id).eq('date_cmd',today())
+    .order('created_at',{ascending:false});
+  const all=cmds||[];
+  const livrees=all.filter(c=>c.statut==='Livré');
+  const enCours=all.filter(c=>['Nouveau','En prépa'].includes(c.statut));
+  const annulees=all.filter(c=>c.statut==='Annulé');
+  const totalCA=livrees.reduce((a,c)=>a+c.montant,0);
+
+  document.getElementById('cmd-all-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-v" style="color:var(--ac)">${fmt(totalCA)} F</div><div class="stat-l">💵 CA total</div></div>
+    <div class="stat-card"><div class="stat-v" style="color:var(--gn)">${livrees.length}</div><div class="stat-l">✅ Livrées</div></div>
+    <div class="stat-card"><div class="stat-v" style="color:var(--wn)">${enCours.length}</div><div class="stat-l">⏳ En cours</div></div>
+    <div class="stat-card"><div class="stat-v" style="color:var(--dg)">${annulees.length}</div><div class="stat-l">✕ Annulées</div></div>`;
+
+  document.getElementById('cmd-all-list').innerHTML=all.length
+    ?all.map(c=>`
+      <div class="hist-item">
+        <div class="hist-top">
+          <div class="hist-tbl">${c.table_nom} <span style="font-size:10px;font-weight:400;color:var(--mt)">— ${c.employe_nom||'?'}</span></div>
+          <div class="hist-time">${c.heure||''}</div>
+        </div>
+        <div class="hist-items">${c.articles||''}</div>
+        <div class="hist-bot">
+          <div class="hist-amt">${fmt(c.montant)} F</div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:11px;color:var(--mt)">${c.paiement||''}</span>
+            <span class="pill ${c.statut==='Livré'?'p-d':c.statut==='Nouveau'?'p-n':c.statut==='En prépa'?'p-p':'p-c'}">${c.statut}</span>
+          </div>
+        </div>
+      </div>`).join('')
+    :'<div class="empty">Aucune commande aujourd\'hui</div>';
+}
+
+function startChefModule(){
+  loadEquipe();
+  // MODULE MANAGER — Stats appels au démarrage du chef
+  if (typeof injectAppelsMgrStats === 'function') injectAppelsMgrStats();
+  db.channel('chef-rt-'+ETAB.id)
+    .on('postgres_changes',{event:'*',schema:'public',table:'commandes',filter:`etab_id=eq.${ETAB.id}`},
+      ()=>{
+        const cv1=document.querySelector('#view-equipe:not(.hide)');if(cv1) loadEquipe();
+        const cv2=document.querySelector('#view-cmd-all:not(.hide)');if(cv2) loadCmdAll();
+      })
+    // REALTIME CALLS — Chef voit aussi les mises à jour appels
+    .subscribe();
+  db.channel('appels-chef-'+ETAB.id)
+    .on('postgres_changes',{event:'*',schema:'public',table:'appels',filter:`etab_id=eq.${ETAB.id}`},
+      ()=>{
+        if(typeof injectAppelsMgrStats==='function') injectAppelsMgrStats();
+      })
+    .subscribe();
+}
+
+// ══════════════════════════════════════════════════════════════
+// 7. MODULE DIRECTEUR
+// ══════════════════════════════════════════════════════════════
+async function loadDirection(){
+  const [cmdRes,alertRes]=await Promise.all([
+    db.from('commandes').select('*').eq('etab_id',ETAB.id).eq('date_cmd',today()),
+    db.from('alertes').select('*').eq('etab_id',ETAB.id).eq('date_alerte',today())
+      .order('created_at',{ascending:false}).limit(6),
+  ]);
+  const cmds=cmdRes.data||[];
+  const alertes=alertRes.data||[];
+  const livrees=cmds.filter(c=>c.statut==='Livré');
+  const enCours=cmds.filter(c=>['Nouveau','En prépa'].includes(c.statut));
+  const annulees=cmds.filter(c=>c.statut==='Annulé');
+  const totalCA=livrees.reduce((a,c)=>a+c.montant,0);
+  const ticketMoyen=livrees.length?Math.round(totalCA/livrees.length):0;
+  const tauxAnnulation=cmds.length?Math.round(annulees.length/cmds.length*100):0;
+
+  document.getElementById('dir-kpi').innerHTML=`
+    <div class="dir-kpi">
+      <div class="dir-kpi-v" style="color:var(--ac)">${fmt(totalCA)} F</div>
+      <div class="dir-kpi-l">💵 Chiffre d'affaires</div>
+    </div>
+    <div class="dir-kpi">
+      <div class="dir-kpi-v">${cmds.length}</div>
+      <div class="dir-kpi-l">📦 Commandes total</div>
+    </div>
+    <div class="dir-kpi">
+      <div class="dir-kpi-v" style="color:var(--gn)">${livrees.length}</div>
+      <div class="dir-kpi-l">✅ Livrées</div>
+    </div>
+    <div class="dir-kpi">
+      <div class="dir-kpi-v" style="color:var(--inf)">${fmt(ticketMoyen)} F</div>
+      <div class="dir-kpi-l">📊 Ticket moyen</div>
+    </div>
+    <div class="dir-kpi">
+      <div class="dir-kpi-v" style="color:var(--wn)">${enCours.length}</div>
+      <div class="dir-kpi-l">⏳ En cours</div>
+    </div>
+    <div class="dir-kpi">
+      <div class="dir-kpi-v" style="color:${tauxAnnulation>20?'var(--dg)':'var(--mt)'}">${tauxAnnulation}%</div>
+      <div class="dir-kpi-l">✕ Taux annulation</div>
+    </div>`;
+
+  // Performance équipe (barres)
+  const byEmp={};
+  livrees.forEach(c=>{
+    if(!byEmp[c.employe_id]) byEmp[c.employe_id]={nom:c.employe_nom,ca:0,cmds:0,id:c.employe_id};
+    byEmp[c.employe_id].ca+=c.montant;
+    byEmp[c.employe_id].cmds++;
+  });
+  const maxCA=Math.max(...Object.values(byEmp).map(e=>e.ca),1);
+  const sorted=Object.values(byEmp).sort((a,b)=>b.ca-a.ca).slice(0,8);
+
+  document.getElementById('dir-team').innerHTML=sorted.length
+    ?sorted.map((e,i)=>{
+      const emp=EMPS.find(x=>x.id===e.id);
+      const col=emp?COLORS[EMPS.indexOf(emp)%COLORS.length]:'#7c6cff';
+      const pct=Math.round((e.ca/maxCA)*100);
+      return `
+      <div class="dir-bar-row">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <div style="display:flex;align-items:center;gap:7px">
+            <span style="font-size:11px;color:var(--mt);width:16px;text-align:right">${i+1}</span>
+            <div style="width:24px;height:24px;border-radius:50%;background:${col}22;color:${col};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0">${ini(e.nom)}</div>
+            <span style="font-size:12px;font-weight:600">${e.nom}</span>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <span style="font-size:13px;font-weight:800;color:var(--ac)">${fmt(e.ca)} F</span>
+            <span style="font-size:10px;color:var(--mt);margin-left:6px">${e.cmds} cmd${e.cmds!==1?'s':''}</span>
+          </div>
+        </div>
+        <div class="dir-bar-track">
+          <div class="dir-bar-fill" style="width:${pct}%;background:${col}"></div>
+        </div>
+      </div>`;
+    }).join('')
+    :'<div class="empty" style="padding:20px">Aucune vente enregistrée</div>';
+
+  // Alertes
+  document.getElementById('dir-alertes').innerHTML=alertes.length
+    ?alertes.map(a=>`
+      <div class="alert-vig ${a.type==='critical'?'critical':a.type==='warning'?'warning':'info'}">
+        <div style="display:flex;gap:9px;align-items:flex-start">
+          <span style="font-size:20px;flex-shrink:0">${a.icone||'⚠️'}</span>
+          <div style="flex:1">
+            <div style="font-size:12px;font-weight:700">${a.titre}</div>
+            <div style="font-size:10px;color:var(--mt);margin-top:3px">${a.message}</div>
+            <div style="font-size:10px;color:var(--mt);margin-top:4px">🕐 ${a.heure} · ${a.date_alerte}</div>
+          </div>
+        </div>
+      </div>`).join('')
+    :'<div class="empty" style="padding:20px">✅ Aucune alerte</div>';
+
+  // MODULE MANAGER — Injecter stats appels clients dans le dashboard directeur
+  // TABLE CALL MANAGEMENT · ADDITION REQUEST
+  if (typeof injectAppelsMgrStats === 'function') injectAppelsMgrStats();
+}
+
+function startDirecteurModule(){
+  loadDirection();
+  db.channel('dir-rt-'+ETAB.id)
+    .on('postgres_changes',{event:'*',schema:'public',table:'commandes',filter:`etab_id=eq.${ETAB.id}`},
+      ()=>{
+        const cv1=document.querySelector('#view-direction:not(.hide)');if(cv1) loadDirection();
+        const cv2=document.querySelector('#view-equipe:not(.hide)');if(cv2) loadEquipe();
+        const cv3=document.querySelector('#view-cmd-all:not(.hide)');if(cv3) loadCmdAll();
+        refreshCA();
+      })
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'alertes',filter:`etab_id=eq.${ETAB.id}`},
+      ()=>{const cv=document.querySelector('#view-direction:not(.hide)');if(cv) loadDirection();})
+    .subscribe();
+  // REALTIME CALLS — Directeur voit les stats appels en temps réel — MODULE MANAGER
+  db.channel('appels-dir-'+ETAB.id)
+    .on('postgres_changes',{event:'*',schema:'public',table:'appels',filter:`etab_id=eq.${ETAB.id}`},
+      ()=>{
+        if(typeof injectAppelsMgrStats==='function') injectAppelsMgrStats();
+      })
+    .subscribe();
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════
+// BAROS QR FIX — Voir / Télécharger / Imprimer le QR d'un employé
+// EMPLOYEE QR GENERATION · MOBILE QR SUPPORT
+// ═══════════════════════════════════════════════════════════════════════
+
+// Cache temporaire des données employé pour le modal QR
+let _qrModalEmp = null;
+
+/**
+ * BAROS QR FIX — Afficher le QR d'un employé en plein écran
+ * Génère le QR si absent, l'affiche, propose télécharger + imprimer
+ */
+async function voirQREmp(empId) {
+  const emp = EMPS.find(e => e.id === empId);
+  if (!emp) { toast('Employé introuvable', 'var(--dg)'); return; }
+  _qrModalEmp = emp;
+
+  // BAROS QR FIX — Supprimer modal existant
+  const existing = document.getElementById('qr-emp-modal');
+  if (existing) existing.remove();
+
+  // Créer le modal
+  const modal = document.createElement('div');
+  modal.id = 'qr-emp-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:8000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px';
+  modal.innerHTML = `
+    <div style="font-size:22px;font-weight:800;color:#fff">${emp.nom}</div>
+    <div style="font-size:12px;color:rgba(255,255,255,.5)">${emp.role}</div>
+    <div id="qr-emp-img-box" style="background:#fff;padding:14px;border-radius:16px;box-shadow:0 0 40px rgba(200,245,90,.2)">
+      <div style="width:200px;height:200px;display:flex;align-items:center;justify-content:center;color:#333;font-size:12px">⏳ Génération...</div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+      <button onclick="downloadQREmpModal()" style="padding:10px 18px;border-radius:10px;background:rgba(200,245,90,.15);border:1px solid rgba(200,245,90,.3);color:var(--ac);font-size:13px;font-weight:700;cursor:pointer">📥 Télécharger QR</button>
+      <button onclick="imprimerBadgeEmpModal()" style="padding:10px 18px;border-radius:10px;background:rgba(124,108,255,.15);border:1px solid rgba(124,108,255,.3);color:#7c6cff;font-size:13px;font-weight:700;cursor:pointer">🖨️ Imprimer badge</button>
+      <button onclick="document.getElementById('qr-emp-modal').remove()" style="padding:10px 18px;border-radius:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);font-size:13px;cursor:pointer">✕ Fermer</button>
+    </div>
+    <div id="qr-emp-status" style="font-size:11px;color:rgba(255,255,255,.4)"></div>
+  `;
+  document.body.appendChild(modal);
+
+  // EMPLOYEE QR GENERATION — Générer ou utiliser le QR existant
+  let qrSrc = emp.qr_code || null;
+
+  if (!qrSrc) {
+    // QR non encore généré — générer maintenant
+    document.getElementById('qr-emp-status').textContent = '⏳ Génération du QR en cours...';
+    // BAROS QR FIX — Vérifier toutes les données avant génération
+    const empComplet = {
+      id: emp.id,
+      nom: emp.nom,
+      role: emp.role,
+      etab_id: emp.etab_id || ETAB.id,
+      pin: emp.pin || null
+    };
+    qrSrc = await genererQREmploye(empComplet);
+    if (qrSrc) {
+      // QR ERROR HANDLING — Sauvegarder dans Supabase
+      const { error: qrErr } = await db.from('employes').update({ qr_code: qrSrc }).eq('id', emp.id);
+      if (!qrErr) {
+        emp.qr_code = qrSrc; // Mettre à jour le cache local
+        document.getElementById('qr-emp-status').textContent = '✅ QR généré et sauvegardé';
+        toast('✅ QR généré !', 'var(--gn)');
+      } else {
+        document.getElementById('qr-emp-status').textContent = '⚠️ QR généré mais non sauvegardé';
+        toast('⚠️ QR non sauvegardé : ' + qrErr.message, 'var(--wn)');
+      }
+    } else {
+      document.getElementById('qr-emp-status').textContent = '❌ Échec génération QR';
+      toast('❌ Erreur génération QR', 'var(--dg)');
+    }
+  } else {
+    document.getElementById('qr-emp-status').textContent = '✅ QR chargé';
+  }
+
+  // Afficher le QR
+  const box = document.getElementById('qr-emp-img-box');
+  if (box && qrSrc) {
+    const img = document.createElement('img');
+    img.src = qrSrc;
+    img.style.cssText = 'width:200px;height:200px;border-radius:8px;display:block';
+    img.alt = 'QR Badge ' + emp.nom;
+    box.innerHTML = '';
+    box.appendChild(img);
+    // Stocker pour download/print
+    box.dataset.qrSrc = qrSrc;
+  } else if (box && !qrSrc) {
+    box.innerHTML = '<div style="width:200px;height:200px;display:flex;align-items:center;justify-content:center;color:#333;font-size:12px;text-align:center">❌ QR non disponible<br>Réessayez</div>';
+  }
+}
+
+function downloadQREmpModal() {
+  const box = document.getElementById('qr-emp-img-box');
+  const src = box?.dataset.qrSrc;
+  if (!src || !_qrModalEmp) { toast('⚠️ QR non disponible', 'var(--wn)'); return; }
+  downloadQREmp(_qrModalEmp.id, _qrModalEmp.nom, src);
+}
+
+function imprimerBadgeEmpModal() {
+  const box = document.getElementById('qr-emp-img-box');
+  const src = box?.dataset.qrSrc;
+  if (!src || !_qrModalEmp) { toast('⚠️ QR non disponible', 'var(--wn)'); return; }
+  imprimerBadgeEmp(_qrModalEmp, src);
+}
+
+/**
+ * BAROS QR FIX — Régénérer le QR d'un employé (depuis la vue équipe)
+ * Utile si le QR existant est corrompu ou absent
+ */
+async function regenQRDepuisEquipe(empId) {
+  const emp = EMPS.find(e => e.id === empId);
+  if (!emp) return;
+  toast('⏳ Régénération QR...', 'var(--inf)');
+  const empData = {
+    id: emp.id, nom: emp.nom, role: emp.role,
+    etab_id: emp.etab_id || ETAB.id, pin: emp.pin || null
+  };
+  const qrSrc = await genererQREmploye(empData);
+  if (!qrSrc) { toast('❌ Échec QR', 'var(--dg)'); return; }
+  const { error } = await db.from('employes').update({ qr_code: qrSrc }).eq('id', empId);
+  if (error) { toast('⚠️ Sauvegarde échouée', 'var(--wn)'); return; }
+  emp.qr_code = qrSrc;
+  toast('✅ QR régénéré !', 'var(--gn)');
+  loadEquipe();
 }
 </script>
 
