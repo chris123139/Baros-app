@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/gestionnaire.html" },
+    { "source": "/", "destination": "/gestionnaire_fixed.html" },
     { "source": "/table/:tableId", "destination": "/table.html" }
   ],
   "headers": [
