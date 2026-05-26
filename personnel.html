@@ -481,6 +481,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg
     <div class="hdr-right">
       <div class="badge-ca" id="badge-ca">0 F</div>
       <div class="badge-cmd hide" id="badge-pending" onclick="showTab('barman',null)">0 🍺</div>
+      <div class="logout" id="hdr-bt-btn" onclick="btConnectHeader()" title="Imprimante Bluetooth" style="font-size:16px;cursor:pointer">🖨️</div>
       <div class="logout" onclick="doLogout()">⏏</div>
     </div>
   </div>
@@ -1829,18 +1830,21 @@ function updatePrinterUI() {
   const btn  = document.getElementById('pt-btn');
   const pbtn = document.getElementById('bt-print-btn');
   if (!dot) return;
+  const hdrBtn = document.getElementById('hdr-bt-btn');
   if (BTP.connected) {
     dot.className  = 'printer-dot on';
     name.textContent = BTP.device.name || 'Imprimante connectée';
     btn.textContent  = '🔌 Déconnecter';
     btn.className    = 'printer-connect-btn on';
     pbtn.classList.remove('disabled');
+    if (hdrBtn) { hdrBtn.textContent = '🖨️✅'; hdrBtn.title = (BTP.device?.name || 'Imprimante') + ' connectée'; }
   } else {
     dot.className  = 'printer-dot off';
     name.textContent = 'Non connectée';
     btn.textContent  = '🔗 Connecter';
     btn.className    = 'printer-connect-btn';
     pbtn.classList.add('disabled');
+    if (hdrBtn) { hdrBtn.textContent = '🖨️'; hdrBtn.title = 'Imprimante Bluetooth'; }
   }
 }
 
@@ -1863,6 +1867,24 @@ async function btConnect() {
   } finally {
     btn.disabled = false;
     updatePrinterUI();
+  }
+}
+
+async function btConnectHeader() {
+  const btn = document.getElementById('hdr-bt-btn');
+  if (BTP.connected) {
+    BTP.disconnect(); updatePrinterUI(); return;
+  }
+  if (btn) { btn.textContent = '⏳'; btn.title = 'Connexion…'; }
+  try {
+    const name = await BTP.connect();
+    const sel = document.getElementById('pt-paper');
+    BTP.width = sel && sel.value === '58mm' ? 32 : 48;
+    updatePrinterUI();
+    toast('✅ ' + name + ' connectée !', 'var(--gn)');
+  } catch(e) {
+    updatePrinterUI();
+    if (e.message !== 'Annulé.') toast('❌ ' + (e.message || 'Connexion échouée'), 'var(--rd)');
   }
 }
 
