@@ -1,43 +1,51 @@
 {
   "name": "BarOS Manager",
   "short_name": "BarOS Mgr",
-  "description": "BarOS — Gestion de bar intelligente",
-  "start_url": "./gestionnaire.html",
-  "scope": "./",
+  "description": "Tableau de bord gestionnaire BarOS — notifications temps réel",
+  "start_url": "/gestionnaire_fixed_6.html",
   "display": "standalone",
-  "orientation": "any",
+  "orientation": "portrait-primary",
   "background_color": "#0a0a0f",
   "theme_color": "#c8f55a",
   "lang": "fr",
+  "scope": "/",
+  "categories": ["business", "productivity"],
+  "prefer_related_applications": false,
   "icons": [
     {
-      "src": "icons/icon-manager.svg",
-      "sizes": "any",
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEwMCIgZmlsbD0iIzBhMGEwZiIvPjx0ZXh0IHg9IjI1NiIgeT0iMzIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwgQmxhY2siIGZvbnQtc2l6ZT0iMjgwIiBmaWxsPSIjYzhmNTVhIj5CPC90ZXh0Pjwvc3ZnPg==",
+      "sizes": "72x72",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-manager.svg",
-      "sizes": "any",
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEwMCIgZmlsbD0iIzBhMGEwZiIvPjx0ZXh0IHg9IjI1NiIgeT0iMzIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwgQmxhY2siIGZvbnQtc2l6ZT0iMjgwIiBmaWxsPSIjYzhmNTVhIj5CPC90ZXh0Pjwvc3ZnPg==",
+      "sizes": "192x192",
       "type": "image/svg+xml",
-      "purpose": "maskable"
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEwMCIgZmlsbD0iIzBhMGEwZiIvPjx0ZXh0IHg9IjI1NiIgeT0iMzIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwgQmxhY2siIGZvbnQtc2l6ZT0iMjgwIiBmaWxsPSIjYzhmNTVhIj5CPC90ZXh0Pjwvc3ZnPg==",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ],
   "shortcuts": [
     {
-      "name": "Pointage",
-      "short_name": "Pointage",
-      "description": "Scanner de badges employés",
-      "url": "./pointage.html",
-      "icons": [{ "src": "icons/icon-pointage.svg", "sizes": "any" }]
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Tableau de bord principal",
+      "url": "/gestionnaire_fixed_6.html#dashboard",
+      "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96" }]
     },
     {
       "name": "Personnel",
-      "short_name": "Personnel",
-      "description": "Application staff",
-      "url": "./personnel.html",
-      "icons": [{ "src": "icons/icon-personnel.svg", "sizes": "any" }]
+      "short_name": "Equipe",
+      "description": "Gestion du personnel",
+      "url": "/gestionnaire_fixed_6.html#personnel",
+      "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96" }]
     }
   ],
-  "categories": ["business", "productivity"]
+  "gcm_sender_id": "VOTRE_SENDER_ID"
 }
